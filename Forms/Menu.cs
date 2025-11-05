@@ -13,11 +13,10 @@ namespace DesktopKonata.Forms
         private readonly SettingsService _settingsService;
         private readonly CharacterService _characterService;
         private readonly CharacterManagementService _characterManagementService;
+        private readonly CharacterModeService _characterModeService;
         private CharacterUIService _characterUIService = null!; // Инициализируется после InitializeComponent()
         private CharacterEntity? _selectedCharacter;
         private System.Windows.Forms.Timer _updateTimer = null!; // Инициализируется в SetupUpdateTimer()
-        private string? _currentCharacterName; // Имя текущего персонажа в одиночном режиме
-        private Point? _savedCharacterPosition; // Сохранённая позиция персонажа
 
         public Menu()
         {
@@ -28,6 +27,7 @@ namespace DesktopKonata.Forms
             
             _characterService = new CharacterService();
             _characterManagementService = new CharacterManagementService(_settingsService.Settings);
+            _characterModeService = new CharacterModeService(_characterService, _settingsService.Settings);
             
             _characterUIService = new CharacterUIService(
                 charactersListBox,
@@ -57,6 +57,51 @@ namespace DesktopKonata.Forms
             }
         }
 
+        /// <summary>
+        /// Единая точка переключения режима персонажей
+        /// Используется как из трея, так и из настроек
+        /// </summary>
+        private void SwitchCharacterMode(bool singleMode)
+        {
+            if (_characterModeService.IsSingleCharacterMode == singleMode)
+                return; // Режим не изменился
+
+            // Если включаем одиночный режим и есть несколько персонажей
+            if (singleMode && CharacterManager.Characters.Count > 1)
+            {
+                var result = MessageBox.Show(
+                    "Включён режим одного персонажа.\nНа экране останется только первый персонаж.\nПродолжить?",
+                    "Режим одного персонажа",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (result == DialogResult.No)
+                {
+                    // Пользователь отменил переключение
+                    return;
+                }
+            }
+
+            // Переключаем режим через сервис
+            _characterModeService.SwitchMode(singleMode, saveSettings: true);
+
+            // Обновляем UI
+            UpdateUIForMode();
+            ForceUpdateActiveCharactersList();
+            
+            if (CharacterManager.Characters.Count > 0)
+            {
+                _selectedCharacter = CharacterManager.Characters[0];
+                UpdateUIForSelectedCharacter();
+            }
+
+            // Синхронизируем состояние чекбоксов
+            singleCharacterModeToolStripMenuItem.Checked = !singleMode; // Инвертировано: чекбокс "Много персонажей"
+            _trayIconService.SingleCharacterMode = singleMode;
+
+            SaveCharacters();
+        }
+
         private void OnCharacterAddRequested(object? sender, string characterName)
         {
             var charData = _settingsService.Settings.AvailableCharacters.FirstOrDefault(c => 
@@ -74,48 +119,23 @@ namespace DesktopKonata.Forms
                 float scale = charData?.DefaultScale ?? CharacterManager.GlobalScale;
                 bool isFlipped = charData?.DefaultIsFlipped ?? CharacterManager.GlobalFlip;
 
-                if (_settingsService.Settings.SingleCharacterMode)
+                // Используем сервис режимов для добавления персонажа
+                _characterModeService.AddCharacter(bitmap, characterName, scale, isFlipped);
+                
+                // Обновляем выбранного персонажа
+                if (CharacterManager.Characters.Count > 0)
                 {
-                    if (_currentCharacterName == characterName && CharacterManager.Characters.Count > 0)
+                    int lastIndex = CharacterManager.Characters.Count - 1;
+                    if (!_characterModeService.IsSingleCharacterMode)
                     {
-                        return;
+                        _characterUIService.SetActiveCharacterSelectedIndex(lastIndex);
                     }
-
-                    if (CharacterManager.Characters.Count > 0)
+                    else
                     {
-                        _savedCharacterPosition = CharacterManager.Characters[0].Location;
-                        CharacterManager.ClearCharacters();
+                        lastIndex = 0; // В одиночном режиме всегда первый
                     }
-                    _characterService.AddCharacter(
-                        bitmap, 
-                        characterName, 
-                        scale,
-                        isFlipped,
-                        _savedCharacterPosition
-                    );
-                    _currentCharacterName = characterName;
-
-                    if (CharacterManager.Characters.Count > 0)
-                    {
-                        _selectedCharacter = CharacterManager.Characters[0];
-                        UpdateUIForSelectedCharacter();
-                    }
-                }
-                else
-                {
-                    _characterService.AddCharacter(
-                        bitmap, 
-                        characterName, 
-                        scale,
-                        isFlipped
-                    );
-                    
-                    if (CharacterManager.Characters.Count > 0)
-                    {
-                        _characterUIService.SetActiveCharacterSelectedIndex(CharacterManager.Characters.Count - 1);
-                        _selectedCharacter = CharacterManager.Characters[CharacterManager.Characters.Count - 1];
-                        UpdateUIForSelectedCharacter();
-                    }
+                    _selectedCharacter = CharacterManager.Characters[lastIndex];
+                    UpdateUIForSelectedCharacter();
                 }
                 
                 ForceUpdateActiveCharactersList();
@@ -144,39 +164,8 @@ namespace DesktopKonata.Forms
 
         private void OnTraySingleCharacterModeChanged(object? sender, EventArgs e)
         {
-            singleCharacterModeToolStripMenuItem.Checked = !_trayIconService.SingleCharacterMode;
-            
-            if (_trayIconService.SingleCharacterMode && CharacterManager.Characters.Count > 1)
-            {
-                var firstCharacter = CharacterManager.Characters[0];
-                var savedPosition = firstCharacter.Location;
-                string characterName = firstCharacter.Name;
-                float characterScale = firstCharacter.Scale;
-                bool characterIsFlipped = firstCharacter.IsFlipped;
-                Bitmap characterImage = (Bitmap)firstCharacter.AnimatedImage.Clone();
-                
-                CharacterManager.ClearCharacters();
-                
-                _characterService.AddCharacter(
-                    characterImage, 
-                    characterName, 
-                    characterScale, 
-                    characterIsFlipped,
-                    savedPosition
-                );
-                
-                _currentCharacterName = characterName;
-                _selectedCharacter = CharacterManager.Characters[0];
-                UpdateUIForSelectedCharacter();
-            }
-            else if (!_trayIconService.SingleCharacterMode)
-            {
-                _currentCharacterName = null;
-                _savedCharacterPosition = null;
-            }
-            
-            SaveSettings();
-            UpdateUIForMode();
+            // Используем единую точку переключения режима
+            SwitchCharacterMode(_trayIconService.SingleCharacterMode);
         }
 
         private void OnTrayShowInTaskbarChanged(object? sender, EventArgs e)
@@ -202,7 +191,7 @@ namespace DesktopKonata.Forms
 
         private void UpdateTimer_Tick(object? sender, EventArgs e)
         {
-            _characterUIService.UpdateActiveCharactersList(_settingsService.Settings.SingleCharacterMode);
+            _characterUIService.UpdateActiveCharactersList(_characterModeService.IsSingleCharacterMode);
         }
 
 
@@ -212,7 +201,7 @@ namespace DesktopKonata.Forms
             autoStartToolStripMenuItem.Checked = isAutoStart;
             _trayIconService.AutoStart = isAutoStart;
             
-            _trayIconService.SingleCharacterMode = _settingsService.Settings.SingleCharacterMode;
+            _trayIconService.SingleCharacterMode = _characterModeService.IsSingleCharacterMode;
         }
 
         private void ApplySettings()
@@ -230,7 +219,7 @@ namespace DesktopKonata.Forms
             );
             
             _trayIconService.MinimizeOnClose = _settingsService.Settings.MinimizeOnClose;
-            _trayIconService.SingleCharacterMode = _settingsService.Settings.SingleCharacterMode;
+            _trayIconService.SingleCharacterMode = _characterModeService.IsSingleCharacterMode;
             _trayIconService.ShowInTaskbar = _settingsService.Settings.ShowInTaskbar;
             _trayIconService.ShowMenuOnStartup = _settingsService.Settings.ShowMenuOnStartup;
             
@@ -342,7 +331,7 @@ namespace DesktopKonata.Forms
 
         private void UpdateUIForMode()
         {
-            bool isSingleMode = _settingsService.Settings.SingleCharacterMode;
+            bool isSingleMode = _characterModeService.IsSingleCharacterMode;
             
             if (this.Controls.Contains(activeCharactersPanel))
             {
@@ -353,7 +342,7 @@ namespace DesktopKonata.Forms
             {
                 if (isSingleMode)
                 {
-                    charactersLabel.Text = "🎭 Выберите персонажа";
+                    charactersLabel.Text = "🎭 Персонажи";
                     availableCharactersPanel.Size = new Size(265, 375);
                     charactersListBox.Size = new Size(240, 325);
                 }
@@ -429,82 +418,38 @@ namespace DesktopKonata.Forms
 
             if (newCharacterBitmap == null) return;
 
-            // В режиме одного персонажа
-            if (_settingsService.Settings.SingleCharacterMode)
+            // Используем сервис режимов для добавления персонажа
+            _characterModeService.AddCharacter(
+                newCharacterBitmap, 
+                newCharacterName, 
+                charData.DefaultScale, 
+                charData.DefaultIsFlipped
+            );
+
+            // Обновляем выбранного персонажа
+            if (CharacterManager.Characters.Count > 0)
             {
-                // Если это тот же персонаж - не делаем ничего
-                if (_currentCharacterName == newCharacterName && CharacterManager.Characters.Count > 0)
+                if (_characterModeService.IsSingleCharacterMode)
                 {
-                    return;
+                    // В одиночном режиме выбираем первого (единственного)
+                    _selectedCharacter = CharacterManager.Characters[0];
                 }
-
-                // Сохраняем позицию текущего персонажа перед удалением
-                if (CharacterManager.Characters.Count > 0)
+                else
                 {
-                    _savedCharacterPosition = CharacterManager.Characters[0].Location;
-                    CharacterManager.ClearCharacters();
+                    // В режиме нескольких персонажей выбираем последнего добавленного
+                    _characterUIService.SetActiveCharacterSelectedIndex(CharacterManager.Characters.Count - 1);
+                    _selectedCharacter = CharacterManager.Characters[CharacterManager.Characters.Count - 1];
                 }
-
-                // Добавляем нового персонажа
-                _characterService.AddCharacter(
-                    newCharacterBitmap, 
-                    newCharacterName, 
-                    charData.DefaultScale, 
-                    charData.DefaultIsFlipped,
-                    _savedCharacterPosition
-                );
-                _currentCharacterName = newCharacterName;
-
-                // Применяем индивидуальные настройки персонажа
-                if (CharacterManager.Characters.Count > 0)
-                {
-                    CharacterManager.Characters[0].Scale = charData.DefaultScale;
-                    CharacterManager.Characters[0].IsFlipped = charData.DefaultIsFlipped;
-                    
-                    // Восстанавливаем позицию, если была сохранена
-                    if (_savedCharacterPosition.HasValue)
-                    {
-                        CharacterManager.Characters[0].Location = _savedCharacterPosition.Value;
-                    }
-                }
-
-                // Выбираем персонажа для настройки
-                _selectedCharacter = CharacterManager.Characters[0];
                 UpdateUIForSelectedCharacter();
             }
-            else
-            {
-                // В режиме нескольких персонажей - просто добавляем
-                _characterService.AddCharacter(
-                    newCharacterBitmap, 
-                    newCharacterName, 
-                    charData.DefaultScale, 
-                    charData.DefaultIsFlipped
-                );
-                
-                // Применяем индивидуальные настройки персонажа
-                if (CharacterManager.Characters.Count > 0)
-                {
-                    var newChar = CharacterManager.Characters[CharacterManager.Characters.Count - 1];
-                    newChar.Scale = charData.DefaultScale;
-                    newChar.IsFlipped = charData.DefaultIsFlipped;
-                }
-                
-                ForceUpdateActiveCharactersList();
-                
-                // Автоматически выбираем добавленного персонажа
-                if (CharacterManager.Characters.Count > 0)
-                {
-                    _characterUIService.SetActiveCharacterSelectedIndex(CharacterManager.Characters.Count - 1);
-                }
-            }
             
+            ForceUpdateActiveCharactersList();
             SaveCharacters();
         }
 
         private void ForceUpdateActiveCharactersList()
         {
-            _characterUIService.ForceUpdateActiveCharactersList(_settingsService.Settings.SingleCharacterMode);
+            _characterUIService.ForceUpdateActiveCharactersList(_characterModeService.IsSingleCharacterMode);
         }
 
         private void activeCharactersListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -602,8 +547,7 @@ namespace DesktopKonata.Forms
         {
             CharacterManager.ClearCharacters();
             _selectedCharacter = null;
-            _currentCharacterName = null;
-            _savedCharacterPosition = null;
+            _characterModeService.ResetSingleModeState();
             ForceUpdateActiveCharactersList();
             UpdateUIForSelectedCharacter();
             SaveCharacters();
@@ -660,54 +604,30 @@ namespace DesktopKonata.Forms
                     
                     Bitmap gifBitmap = new(copiedFilePath);
 
-                    // В режиме одного персонажа
-                    if (_settingsService.Settings.SingleCharacterMode)
+                    // Используем сервис режимов для добавления персонажа
+                    _characterModeService.AddCharacter(
+                        gifBitmap, 
+                        fileName, 
+                        CharacterManager.GlobalScale, 
+                        CharacterManager.GlobalFlip
+                    );
+
+                    // Обновляем выбранного персонажа
+                    if (CharacterManager.Characters.Count > 0)
                     {
-                        // Сохраняем позицию текущего персонажа
-                        if (CharacterManager.Characters.Count > 0)
+                        if (_characterModeService.IsSingleCharacterMode)
                         {
-                            _savedCharacterPosition = CharacterManager.Characters[0].Location;
-                            CharacterManager.ClearCharacters();
+                            _selectedCharacter = CharacterManager.Characters[0];
                         }
-
-                        // Добавляем нового персонажа
-                        _characterService.AddCharacter(
-                            gifBitmap, 
-                            fileName, 
-                            CharacterManager.GlobalScale, 
-                            CharacterManager.GlobalFlip,
-                            _savedCharacterPosition
-                        );
-                        _currentCharacterName = fileName;
-
-                        // Восстанавливаем позицию
-                        if (_savedCharacterPosition.HasValue && CharacterManager.Characters.Count > 0)
-                        {
-                            CharacterManager.Characters[0].Location = _savedCharacterPosition.Value;
-                        }
-
-                        // Выбираем персонажа
-                        _selectedCharacter = CharacterManager.Characters[0];
-                        UpdateUIForSelectedCharacter();
-                    }
-                    else
-                    {
-                        // В режиме нескольких персонажей
-                        _characterService.AddCharacter(
-                            gifBitmap, 
-                            fileName, 
-                            CharacterManager.GlobalScale, 
-                            CharacterManager.GlobalFlip
-                        );
-                        ForceUpdateActiveCharactersList();
-                        
-                        // Автоматически выбираем добавленного персонажа
-                        if (CharacterManager.Characters.Count > 0)
+                        else
                         {
                             _characterUIService.SetActiveCharacterSelectedIndex(CharacterManager.Characters.Count - 1);
+                            _selectedCharacter = CharacterManager.Characters[CharacterManager.Characters.Count - 1];
                         }
+                        UpdateUIForSelectedCharacter();
                     }
                     
+                    ForceUpdateActiveCharactersList();
                     SaveCharacters();
                 }
                 catch (Exception ex)
@@ -753,63 +673,18 @@ namespace DesktopKonata.Forms
             bool isMultipleMode = singleCharacterModeToolStripMenuItem.Checked;
             bool isSingleMode = !isMultipleMode;
             
-            // Сохраняем настройку
-            _settingsService.Settings.SingleCharacterMode = isSingleMode;
-            _trayIconService.SingleCharacterMode = isSingleMode;
+            // Сохраняем состояние чекбокса до переключения
+            bool previousCheckedState = singleCharacterModeToolStripMenuItem.Checked;
             
-            // Если ВКЛЮЧАЕМ одиночный режим (выключаем много персонажей) и есть несколько персонажей
-            if (isSingleMode && CharacterManager.Characters.Count > 1)
-            {
-                var result = MessageBox.Show(
-                    "Включён режим одного персонажа.\nНа экране останется только первый персонаж.\nПродолжить?",
-                    "Режим одного персонажа",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question);
-
-                if (result == DialogResult.Yes)
-                {
-                    // Оставляем только первого персонажа
-                    var firstCharacter = CharacterManager.Characters[0];
-                    var savedPosition = firstCharacter.Location;
-                    string characterName = firstCharacter.Name;
-                    float characterScale = firstCharacter.Scale;
-                    bool characterIsFlipped = firstCharacter.IsFlipped;
-                    Bitmap characterImage = (Bitmap)firstCharacter.AnimatedImage.Clone();
-                    
-                    CharacterManager.ClearCharacters();
-                    
-                    // Воссоздаём первого
-                    _characterService.AddCharacter(
-                        characterImage, 
-                        characterName, 
-                        characterScale, 
-                        characterIsFlipped,
-                        savedPosition
-                    );
-                    
-                    _currentCharacterName = characterName;
-                    _selectedCharacter = CharacterManager.Characters[0];
-                    UpdateUIForSelectedCharacter();
-                }
-                else
-                {
-                    // Отменяем изменения
-                    singleCharacterModeToolStripMenuItem.Checked = true; // Возвращаем чекбокс "Много персонажей"
-                    _settingsService.Settings.SingleCharacterMode = false; // Возвращаем множественный режим
-                    _trayIconService.SingleCharacterMode = false;
-                    return;
-                }
-            }
-            else if (isMultipleMode)
-            {
-                // Переключаемся в режим нескольких персонажей
-                _currentCharacterName = null;
-                _savedCharacterPosition = null;
-                ForceUpdateActiveCharactersList();
-            }
+            // Используем единую точку переключения режима
+            SwitchCharacterMode(isSingleMode);
             
-            SaveSettings();
-            UpdateUIForMode();
+            // Проверяем, удалось ли переключить режим (пользователь мог отменить)
+            if (_characterModeService.IsSingleCharacterMode != isSingleMode)
+            {
+                // Переключение отменено, возвращаем состояние чекбокса
+                singleCharacterModeToolStripMenuItem.Checked = previousCheckedState;
+            }
         }
 
         private void minimizeOnCloseToolStripMenuItem_Click(object? sender, EventArgs e)
@@ -997,14 +872,15 @@ namespace DesktopKonata.Forms
             
             ToolStripMenuItem singleModeItem = new ToolStripMenuItem("👥 Много персонажей")
             {
-                Checked = !_settingsService.Settings.SingleCharacterMode,
+                Checked = !_characterModeService.IsSingleCharacterMode,
                 CheckOnClick = true
             };
             singleModeItem.Click += (s, ev) =>
             {
-                _settingsService.Settings.SingleCharacterMode = !singleModeItem.Checked;
-                _trayIconService.SingleCharacterMode = !singleModeItem.Checked;
-                OnTraySingleCharacterModeChanged(_trayIconService, EventArgs.Empty);
+                bool newSingleMode = !singleModeItem.Checked;
+                SwitchCharacterMode(newSingleMode);
+                // Обновляем чекбокс в соответствии с реальным состоянием
+                singleModeItem.Checked = !_characterModeService.IsSingleCharacterMode;
             };
             settingsMenu.Items.Add(singleModeItem);
             
@@ -1055,7 +931,11 @@ namespace DesktopKonata.Forms
                 Checked = autoStartToolStripMenuItem.Checked,
                 CheckOnClick = true
             };
-            autoStartItem.Click += (s, e) => autoStartToolStripMenuItem_Click(s!, e);
+            autoStartItem.Click += (s, ev) =>
+            {
+                autoStartToolStripMenuItem.Checked = autoStartItem.Checked;
+                autoStartToolStripMenuItem_Click(autoStartItem, ev);
+            };
             settingsMenu.Items.Add(autoStartItem);
             
             // Показываем меню около кнопки

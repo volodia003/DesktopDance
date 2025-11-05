@@ -46,7 +46,7 @@ namespace DesktopKonata.Services
 
         public bool SingleCharacterMode
         {
-            get => (_singleCharacterModeMenuItem?.Checked ?? false);
+            get => !(_singleCharacterModeMenuItem?.Checked ?? true);
             set
             {
                 if (_singleCharacterModeMenuItem != null)

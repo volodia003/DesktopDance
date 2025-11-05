@@ -28,10 +28,10 @@ namespace DesktopKonata.Utility
         public float Scale { get; set; } = 1.0f;
         public bool IsFlipped { get; set; } = false;
         public bool IsLocked { get; set; } = false;
-        public bool MinimizeOnClose { get; set; } = true;
-        public bool SingleCharacterMode { get; set; } = true; // По умолчанию одиночный режим (true = одиночный, false = много)
-        public bool ShowInTaskbar { get; set; } = false; // Показывать в панели задач
-        public bool ShowMenuOnStartup { get; set; } = false; // Открывать меню при запуске (по умолчанию скрыто)
+        public bool MinimizeOnClose { get; set; } = false;
+        public bool SingleCharacterMode { get; set; } = false; // По умолчанию режим нескольких персонажей (true = одиночный, false = много)
+        public bool ShowInTaskbar { get; set; } = true; // Показывать в панели задач
+        public bool ShowMenuOnStartup { get; set; } = true; // Открывать меню при запуске
         
         // Список сохранённых персонажей на экране
         public List<CharacterData> SavedCharacters { get; set; } = new List<CharacterData>();
