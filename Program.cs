@@ -13,7 +13,7 @@ namespace DesktopDance
             // Инициализация логгера
             Logger.Info("==============================================");
             Logger.Info("Desktop Dance Application Started");
-            Logger.Info($"Version: 2.0.0");
+            Logger.Info($"Version: 1.0.0");
             Logger.Info($"OS: {Environment.OSVersion}");
             Logger.Info($".NET: {Environment.Version}");
             Logger.Info("==============================================");
