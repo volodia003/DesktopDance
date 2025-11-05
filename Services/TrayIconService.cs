@@ -87,7 +87,7 @@ namespace DesktopDance.Services
             {
                 Visible = true,
                 Icon = icon,
-                Text = "Konata is here!",
+                Text = "Dance is here",
                 BalloonTipIcon = ToolTipIcon.Info,
                 BalloonTipTitle = "Hey",
                 BalloonTipText = "I`ll be here!"
