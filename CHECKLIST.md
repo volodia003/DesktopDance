@@ -33,7 +33,7 @@
     <Company>Ваша Компания</Company>
     <Product>Desktop Dance</Product>
     <Description>Анимированные персонажи на рабочем столе</Description>
-    <Copyright>Copyright © 2024</Copyright>
+    <Copyright>Copyright © 2025</Copyright>
   </PropertyGroup>
   ```
 
