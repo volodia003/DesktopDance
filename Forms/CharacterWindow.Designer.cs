@@ -31,11 +31,10 @@ namespace DesktopKonata.Forms
             this.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ForeColor = System.Drawing.Color.White;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Icon = global::DesktopDance.Properties.Resources.blin4iikIco;
             this.Name = "CharacterWindow";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Desktop Konata";
+            this.Text = "Desktop Dance";
             this.TopMost = true;
             this.TransparencyKey = System.Drawing.Color.Black;
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;

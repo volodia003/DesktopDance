@@ -63,16 +63,6 @@ namespace DesktopDance.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap BananaKonataGIF {
-            get {
-                object obj = ResourceManager.GetObject("BananaKonataGIF", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
-        /// </summary>
         public static System.Drawing.Bitmap blin4iikDance {
             get {
                 object obj = ResourceManager.GetObject("blin4iikDance", resourceCulture);

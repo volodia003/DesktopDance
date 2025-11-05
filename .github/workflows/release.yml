@@ -1,0 +1,156 @@
+name: Release Build
+
+on:
+  push:
+    tags:
+      - 'v*' # Триггер на теги вида v1.0.0
+
+jobs:
+  build:
+    name: Build and Release
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 7.0.x
+    
+    - name: Get version from tag
+      id: version
+      run: |
+        $version = $env:GITHUB_REF -replace 'refs/tags/v', ''
+        echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+        echo "Version: $version"
+      shell: pwsh
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build -c Release --no-restore
+    
+    - name: Publish Self-Contained
+      run: |
+        dotnet publish -c Release -r win-x64 --self-contained true `
+          -p:PublishSingleFile=true `
+          -p:EnableCompressionInSingleFile=true `
+          -p:IncludeNativeLibrariesForSelfExtract=true `
+          -p:DebugType=None `
+          -p:DebugSymbols=false
+    
+    - name: Create README for release
+      run: |
+        $readmeContent = @"
+        ===========================================
+            Desktop Dance ${{ steps.version.outputs.VERSION }}
+        ===========================================
+
+        Спасибо за загрузку Desktop Dance!
+
+        🚀 БЫСТРЫЙ СТАРТ:
+        1. Запустите DesktopDance.exe
+        2. Кликните на иконку в системном трее
+        3. Выберите персонажа из списка
+        4. Наслаждайтесь!
+
+        📋 УПРАВЛЕНИЕ:
+        - Перетаскивайте персонажей мышью
+        - Используйте слайдер для изменения размера
+        - ПКМ на персонаже для контекстного меню
+        - Del - удалить персонажа
+        - F2 - переименовать персонажа
+
+        ⚙️ НАСТРОЙКИ:
+        Доступны через иконку в системном трее (ПКМ → Настройки)
+
+        📖 ПОЛНАЯ ДОКУМЕНТАЦИЯ:
+        https://github.com/${{ github.repository }}
+
+        🐛 НАШЛИ БАГ?
+        Создайте Issue: https://github.com/${{ github.repository }}/issues
+
+        💖 ПРИЯТНОГО ИСПОЛЬЗОВАНИЯ!
+        ===========================================
+        "@
+        
+        Set-Content -Path "bin\Release\net7.0-windows\win-x64\publish\README.txt" -Value $readmeContent -Encoding UTF8
+      shell: pwsh
+    
+    - name: Create Archive
+      run: |
+        $archiveName = "Desktop-Dance-v${{ steps.version.outputs.VERSION }}-win-x64.zip"
+        Compress-Archive -Path "bin\Release\net7.0-windows\win-x64\publish\*" -DestinationPath $archiveName
+        echo "ARCHIVE_NAME=$archiveName" >> $env:GITHUB_OUTPUT
+      shell: pwsh
+      id: archive
+    
+    - name: Calculate checksums
+      run: |
+        $archiveName = "Desktop-Dance-v${{ steps.version.outputs.VERSION }}-win-x64.zip"
+        $hash = (Get-FileHash $archiveName -Algorithm SHA256).Hash
+        "$hash  $archiveName" | Out-File -FilePath "checksums.txt" -Encoding UTF8
+        echo "SHA256: $hash"
+      shell: pwsh
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          Desktop-Dance-v${{ steps.version.outputs.VERSION }}-win-x64.zip
+          checksums.txt
+        body: |
+          ## 🎉 Desktop Dance v${{ steps.version.outputs.VERSION }}
+          
+          ### 📥 Установка
+          
+          1. Скачайте `Desktop-Dance-v${{ steps.version.outputs.VERSION }}-win-x64.zip`
+          2. Распакуйте архив в любую папку
+          3. Запустите `DesktopDance.exe`
+          
+          ### ✨ Возможности
+          
+          - Анимированные персонажи на рабочем столе
+          - Поддержка пользовательских GIF
+          - Два режима работы (одиночный/множественный)
+          - Масштабирование и отзеркаливание персонажей
+          - Автозапуск с Windows
+          - Сворачивание в системный трей
+          
+          ### 💻 Системные требования
+          
+          - **ОС**: Windows 10 или новее
+          - **Память**: Минимум 100 МБ свободной RAM
+          - **.NET Runtime**: Не требуется (self-contained сборка)
+          
+          ### 📋 Что нового
+          
+          <!-- Добавьте здесь список изменений -->
+          
+          ### 🔒 Проверка целостности
+          
+          SHA256 хеш-сумма указана в файле `checksums.txt`
+          
+          ### 📖 Документация
+          
+          Полная документация доступна в [README.md](https://github.com/${{ github.repository }}/blob/main/README.md)
+          
+          ### 🐛 Сообщить о проблеме
+          
+          Если вы нашли баг, пожалуйста, [создайте Issue](https://github.com/${{ github.repository }}/issues)
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: Desktop-Dance-v${{ steps.version.outputs.VERSION }}
+        path: |
+          bin/Release/net7.0-windows/win-x64/publish/
+        retention-days: 30
+
