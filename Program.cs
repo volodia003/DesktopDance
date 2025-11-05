@@ -5,6 +5,8 @@ namespace DesktopDance
 {
     public static class Program
     {
+        private static SingleInstanceManager? _singleInstanceManager;
+
         [STAThread]
         public static void Main()
         {
@@ -18,8 +20,24 @@ namespace DesktopDance
 
             try
             {
+                // Проверка единственного экземпляра приложения
+                _singleInstanceManager = new SingleInstanceManager();
+
+                if (!_singleInstanceManager.IsFirstInstance)
+                {
+                    Logger.Info("Обнаружен запущенный экземпляр приложения. Активация существующего окна...");
+                    SingleInstanceManager.ActivateFirstInstance();
+                    return;
+                }
+
+                Logger.Info("Первый экземпляр приложения - продолжаем запуск");
+
                 ApplicationConfiguration.Initialize();
-                Application.Run(new Menu());
+                
+                var mainForm = new Menu();
+                _singleInstanceManager.RegisterMainForm(mainForm);
+                
+                Application.Run(mainForm);
             }
             catch (Exception ex)
             {
@@ -34,6 +52,7 @@ namespace DesktopDance
             }
             finally
             {
+                _singleInstanceManager?.Dispose();
                 Logger.Info("Desktop Dance Application Closed");
                 Logger.Info("==============================================");
             }
