@@ -56,7 +56,6 @@ namespace DesktopDance.Utility
         {
             try
             {
-                // Создаём папки, если их нет
                 if (!Directory.Exists(AppDataFolder))
                     Directory.CreateDirectory(AppDataFolder);
                 if (!Directory.Exists(CustomGifsFolder))
@@ -76,7 +75,6 @@ namespace DesktopDance.Utility
             return new AppSettings();
         }
 
-        // Метод для копирования GIF в AppData
         public static string CopyGifToAppData(string sourceFilePath)
         {
             try
@@ -126,7 +124,6 @@ namespace DesktopDance.Utility
             }
             catch
             {
-                // Игнорируем ошибки сохранения
             }
         }
     }

@@ -82,31 +82,25 @@ namespace DesktopDance.Services
             ToolStripMenuItem showMenuOnStartupMenuItem,
             Form form)
         {
-            // Применяем масштаб
             scaleTrackBar.Value = (int)(_settings.Scale * 100);
             CharacterManager.SetGlobalScale(_settings.Scale);
             scaleLabel.Text = $"Размер: {scaleTrackBar.Value}%";
 
-            // Применяем отзеркаливание
             flipCheckBox.Checked = _settings.IsFlipped;
             CharacterManager.SetGlobalFlip(_settings.IsFlipped);
 
-            // Применяем блокировку
             lockCheckBox.Checked = _settings.IsLocked;
             CharacterManager.SetLocked(_settings.IsLocked);
 
-            // Применяем настройку сворачивания
             minimizeOnCloseMenuItem.Checked = _settings.MinimizeOnClose;
 
             // Применяем режим: чекбокс "Много персонажей" (true=много, false=одиночный)
             // SingleCharacterMode (true=одиночный, false=много) → инвертируем
             singleCharacterModeMenuItem.Checked = !_settings.SingleCharacterMode;
 
-            // Применяем видимость в панели задач
             showInTaskbarMenuItem.Checked = _settings.ShowInTaskbar;
             form.ShowInTaskbar = _settings.ShowInTaskbar;
 
-            // Применяем настройку показа меню при запуске
             showMenuOnStartupMenuItem.Checked = _settings.ShowMenuOnStartup;
         }
 

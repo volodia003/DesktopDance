@@ -101,7 +101,6 @@ namespace DesktopDance.Services
         {
             _trayContextMenu = new ContextMenuStrip();
 
-            // Показать окно управления
             var showMenuItem = new ToolStripMenuItem("🎮 Управление");
             var defaultFont = SystemFonts.MessageBoxFont;
             if (defaultFont != null)
@@ -113,7 +112,6 @@ namespace DesktopDance.Services
 
             _trayContextMenu.Items.Add(new ToolStripSeparator());
 
-            // Персонажи
             _charactersMenuItem = new ToolStripMenuItem("Персонажи");
             
             var blin4iikMenuItem = new ToolStripMenuItem("🎭 blin4iik Dance");
@@ -126,10 +124,8 @@ namespace DesktopDance.Services
 
             _trayContextMenu.Items.Add(_charactersMenuItem);
 
-            // Настройки
             var settingsMenuItem = new ToolStripMenuItem("⚙️ Настройки");
 
-            // Порядок пунктов как в основных настройках
             _singleCharacterModeMenuItem = new ToolStripMenuItem("👥 Много персонажей")
             {
                 CheckOnClick = true,
@@ -176,14 +172,12 @@ namespace DesktopDance.Services
 
             _trayContextMenu.Items.Add(new ToolStripSeparator());
 
-            // Очистить
             var clearMenuItem = new ToolStripMenuItem("🗑️ Очистить");
             clearMenuItem.Click += (s, e) => Utility.CharacterManager.ClearCharacters();
             _trayContextMenu.Items.Add(clearMenuItem);
 
             _trayContextMenu.Items.Add(new ToolStripSeparator());
 
-            // Выход
             var exitMenuItem = new ToolStripMenuItem("❌ Выход");
             exitMenuItem.Click += (s, e) => 
             { 
@@ -203,18 +197,15 @@ namespace DesktopDance.Services
             if (_charactersMenuItem == null)
                 return;
 
-            // Удаляем все пункты после встроенных персонажей
             while (_charactersMenuItem.DropDownItems.Count > Utility.CharacterResourceProvider.BUILT_IN_CHARACTERS_COUNT)
             {
                 _charactersMenuItem.DropDownItems.RemoveAt(Utility.CharacterResourceProvider.BUILT_IN_CHARACTERS_COUNT);
             }
 
-            // Если есть пользовательские персонажи, добавляем разделитель
             if (customCharacters.Count > 0)
             {
                 _charactersMenuItem.DropDownItems.Add(new ToolStripSeparator());
 
-                // Добавляем пользовательских персонажей
                 foreach (var charData in customCharacters)
                 {
                     var customMenuItem = new ToolStripMenuItem($"📎 {charData.DisplayName}");
@@ -227,7 +218,6 @@ namespace DesktopDance.Services
 
         private void NotifyIcon_MouseClick(object? sender, MouseEventArgs args)
         {
-            // Контекстное меню открывается автоматически при правом клике
         }
 
         private void NotifyIcon_DoubleClick(object? sender, EventArgs e)

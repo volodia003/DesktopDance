@@ -19,7 +19,6 @@ namespace DesktopDance.Services
 
         public void AddCharacter(Bitmap bitmap, string characterName, float scale, bool isFlipped, Point? position = null)
         {
-            // В режиме нескольких персонажей просто добавляем нового
             _characterService.AddCharacter(bitmap, characterName, scale, isFlipped, position);
         }
 
@@ -36,13 +35,11 @@ namespace DesktopDance.Services
 
         public bool CanAddMoreCharacters()
         {
-            // В режиме нескольких персонажей можно добавлять неограниченно
             return true;
         }
 
         public int GetMaxCharacters()
         {
-            // Неограниченное количество
             return int.MaxValue;
         }
     }

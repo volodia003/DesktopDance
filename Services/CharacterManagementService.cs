@@ -69,20 +69,17 @@ namespace DesktopDance.Services
             {
                 var charData = _settings.AvailableCharacters[characterIndex];
 
-                // Удаляем файл
                 if (!string.IsNullOrEmpty(charData.FilePath) && File.Exists(charData.FilePath))
                 {
                     File.Delete(charData.FilePath);
                 }
 
-                // Удаляем из списка пользовательских GIF
                 int customIndex = characterIndex - CharacterResourceProvider.BUILT_IN_CHARACTERS_COUNT;
                 if (customIndex >= 0 && customIndex < _settings.CustomGifFiles.Count)
                 {
                     _settings.CustomGifFiles.RemoveAt(customIndex);
                 }
 
-                // Удаляем из доступных персонажей
                 _settings.AvailableCharacters.RemoveAt(characterIndex);
                 _settings.Save();
 
@@ -105,22 +102,18 @@ namespace DesktopDance.Services
 
             try
             {
-                // Копируем GIF в AppData
                 copiedFilePath = AppSettings.CopyGifToAppData(sourceFilePath);
                 string fileName = Path.GetFileNameWithoutExtension(copiedFilePath);
                 string gifFileName = Path.GetFileName(copiedFilePath);
 
-                // Проверяем, нет ли уже такого GIF
                 if (_settings.CustomGifFiles.Contains(gifFileName))
                 {
                     errorMessage = "Этот GIF уже добавлен.";
                     return false;
                 }
 
-                // Добавляем в список пользовательских GIF
                 _settings.CustomGifFiles.Add(gifFileName);
 
-                // Добавляем в доступные персонажи
                 _settings.AvailableCharacters.Add(new AvailableCharacterData
                 {
                     OriginalName = fileName,

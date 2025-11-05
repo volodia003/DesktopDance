@@ -34,7 +34,6 @@ namespace DesktopDance.Services
             {
                 _availableCharactersListBox.Items.Clear();
                 
-                // Добавляем всех персонажей с правильными иконками
                 for (int i = 0; i < _settings.AvailableCharacters.Count; i++)
                 {
                     var charData = _settings.AvailableCharacters[i];
@@ -44,7 +43,6 @@ namespace DesktopDance.Services
             }
             catch
             {
-                // Игнорируем ошибки
             }
         }
 
@@ -71,7 +69,6 @@ namespace DesktopDance.Services
                 
                 _activeCharactersListBox.EndUpdate();
                 
-                // Обновляем текст метки в зависимости от режима
                 if (singleCharacterMode)
                 {
                     _activeCharactersLabel.Text = $"На экране (макс. 1):";
@@ -107,7 +104,6 @@ namespace DesktopDance.Services
             
             _activeCharactersListBox.EndUpdate();
             
-            // Обновляем текст в зависимости от режима
             if (singleCharacterMode)
             {
                 _activeCharactersLabel.Text = $"На экране (макс. 1):";

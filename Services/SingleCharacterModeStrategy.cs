@@ -38,7 +38,6 @@ namespace DesktopDance.Services
             // Используем переданную позицию или сохранённую
             Point? finalPosition = position ?? _savedPosition;
 
-            // Добавляем нового персонажа
             _characterService.AddCharacter(bitmap, characterName, scale, isFlipped, finalPosition);
             _currentCharacterName = characterName;
 
@@ -73,7 +72,6 @@ namespace DesktopDance.Services
 
                 CharacterManager.ClearCharacters();
 
-                // Воссоздаём первого персонажа
                 _characterService.AddCharacter(
                     characterImage,
                     characterName,
@@ -87,13 +85,11 @@ namespace DesktopDance.Services
             }
             else if (CharacterManager.Characters.Count == 1)
             {
-                // Сохраняем информацию о единственном персонаже
                 _currentCharacterName = CharacterManager.Characters[0].Name;
                 _savedPosition = CharacterManager.Characters[0].Location;
             }
             else
             {
-                // Нет персонажей
                 _currentCharacterName = null;
                 _savedPosition = null;
             }

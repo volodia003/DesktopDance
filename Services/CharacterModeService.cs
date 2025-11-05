@@ -47,10 +47,8 @@ namespace DesktopDance.Services
             IsSingleCharacterMode = singleMode;
             _currentStrategy = singleMode ? _singleModeStrategy : _multipleModeStrategy;
 
-            // Вызываем логику активации режима
             _currentStrategy.OnModeActivated();
 
-            // Сохраняем в настройках
             _settings.SingleCharacterMode = singleMode;
             if (saveSettings)
             {

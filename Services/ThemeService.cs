@@ -225,7 +225,6 @@ namespace DesktopDance.Services
                     break;
 
                 default:
-                    // Для остальных контролов применяем базовые цвета
                     if (control.BackColor != Color.Transparent)
                     {
                         control.BackColor = background;
@@ -256,7 +255,6 @@ namespace DesktopDance.Services
             }
         }
 
-        // Вспомогательные методы для получения цветов по теме
         private Color GetBackgroundColorForTheme(ThemeMode theme)
         {
             return theme switch

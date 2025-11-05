@@ -33,13 +33,10 @@ namespace DesktopDance.Services
         /// </summary>
         public void AddCharacter(Bitmap characterBitmap, string characterName, float scale, bool isFlipped, Point? position = null)
         {
-            // Создаём окна для всех экранов, если их ещё нет
             InitializeWindows();
 
-            // Создаём и добавляем персонажа через CharacterManager
             CharacterManager.AddCharacter(characterBitmap, characterName);
             
-            // Получаем только что добавленного персонажа
             var character = CharacterManager.Characters.LastOrDefault();
             if (character != null)
             {

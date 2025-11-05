@@ -15,9 +15,9 @@ namespace DesktopDance.Forms
         private readonly CharacterManagementService _characterManagementService;
         private readonly CharacterModeService _characterModeService;
         private readonly ThemeService _themeService;
-        private CharacterUIService _characterUIService = null!; // Инициализируется после InitializeComponent()
+        private CharacterUIService _characterUIService = null!;
         private CharacterEntity? _selectedCharacter;
-        private System.Windows.Forms.Timer _updateTimer = null!; // Инициализируется в SetupUpdateTimer()
+        private System.Windows.Forms.Timer _updateTimer = null!;
 
         public Menu()
         {
@@ -26,7 +26,6 @@ namespace DesktopDance.Forms
             _settingsService = new SettingsService();
             _settingsService.InitializeAvailableCharacters();
             
-            // Инициализация ThemeService
             var themeMode = _settingsService.Settings.Theme switch
             {
                 "Dark" => ThemeService.ThemeMode.Dark,
@@ -62,7 +61,6 @@ namespace DesktopDance.Forms
             UpdateUIForMode(); // Применяем режим персонажей при запуске
             SetupUpdateTimer();
             
-            // Применяем тему
             _themeService.ApplyTheme(this);
             
             if (!_settingsService.Settings.ShowMenuOnStartup)
@@ -97,10 +95,8 @@ namespace DesktopDance.Forms
                 }
             }
 
-            // Переключаем режим через сервис
             _characterModeService.SwitchMode(singleMode, saveSettings: true);
 
-            // Обновляем UI
             UpdateUIForMode();
             ForceUpdateActiveCharactersList();
             
@@ -134,10 +130,8 @@ namespace DesktopDance.Forms
                 float scale = charData?.DefaultScale ?? CharacterManager.GlobalScale;
                 bool isFlipped = charData?.DefaultIsFlipped ?? CharacterManager.GlobalFlip;
 
-                // Используем сервис режимов для добавления персонажа
                 _characterModeService.AddCharacter(bitmap, characterName, scale, isFlipped);
                 
-                // Обновляем выбранного персонажа
                 if (CharacterManager.Characters.Count > 0)
                 {
                     int lastIndex = CharacterManager.Characters.Count - 1;
@@ -179,7 +173,6 @@ namespace DesktopDance.Forms
 
         private void OnTraySingleCharacterModeChanged(object? sender, EventArgs e)
         {
-            // Используем единую точку переключения режима
             SwitchCharacterMode(_trayIconService.SingleCharacterMode);
         }
 
@@ -199,7 +192,7 @@ namespace DesktopDance.Forms
         private void SetupUpdateTimer()
         {
             _updateTimer = new System.Windows.Forms.Timer();
-            _updateTimer.Interval = 2000; // Обновлять каждые 2 секунды (реже)
+            _updateTimer.Interval = 2000;
             _updateTimer.Tick += UpdateTimer_Tick;
             _updateTimer.Start();
         }
@@ -263,7 +256,7 @@ namespace DesktopDance.Forms
                 var charData = new CharacterData
                 {
                     Name = character.Name,
-                    FilePath = "", // Для встроенных персонажей оставляем пустым
+                    FilePath = "",
                     Scale = character.Scale,
                     IsFlipped = character.IsFlipped,
                     PositionX = character.Location.X,
@@ -299,7 +292,6 @@ namespace DesktopDance.Forms
             _settingsService.Settings.Save();
         }
 
-        // Загрузка персонажей из настроек
         private void LoadCharacters()
         {
             try
@@ -308,7 +300,6 @@ namespace DesktopDance.Forms
                 {
                     Bitmap? characterBitmap = null;
                     
-                    // Используем ResourceProvider для загрузки bitmap
                     var availableChar = _settingsService.Settings.AvailableCharacters.FirstOrDefault(ac => 
                         ac.DisplayName == charData.Name || ac.OriginalName == charData.Name);
                     
@@ -331,13 +322,11 @@ namespace DesktopDance.Forms
                 
                 ForceUpdateActiveCharactersList();
                 
-                // Автоматически выбираем загруженного персонажа для управления
                 if (CharacterManager.Characters.Count > 0)
                 {
                     _selectedCharacter = CharacterManager.Characters[0];
                     UpdateUIForSelectedCharacter();
                     
-                    // В режиме нескольких персонажей также обновляем индекс в списке
                     if (!_settingsService.Settings.SingleCharacterMode)
                     {
                         _characterUIService.SetActiveCharacterSelectedIndex(0);
@@ -346,7 +335,6 @@ namespace DesktopDance.Forms
             }
             catch
             {
-                // Если ошибка при загрузке - игнорируем
             }
         }
 
@@ -381,10 +369,8 @@ namespace DesktopDance.Forms
         {
             LoadCustomGifList();
             
-            // Загружаем сохранённых персонажей
             LoadCharacters();
 
-            // Окончательно определяем видимость окна управления при запуске
             if (_settingsService.Settings.ShowMenuOnStartup)
             {
                 this.Visible = true;
@@ -398,12 +384,10 @@ namespace DesktopDance.Forms
             }
         }
 
-        // Загрузка списка доступных персонажей
         private void LoadCustomGifList()
         {
             _characterUIService.LoadAvailableCharactersList();
             
-            // Обновляем список пользовательских персонажей в трее
             var customCharacters = _settingsService.Settings.AvailableCharacters
                 .Skip(CharacterResourceProvider.BUILT_IN_CHARACTERS_COUNT).ToList();
             _trayIconService.UpdateCustomCharacters(customCharacters);
@@ -418,12 +402,10 @@ namespace DesktopDance.Forms
             string newCharacterName = charData.DisplayName;
             Bitmap? newCharacterBitmap = null;
 
-            // Получаем bitmap для персонажа через ResourceProvider
             newCharacterBitmap = CharacterResourceProvider.LoadCharacterBitmap(charData);
 
             if (newCharacterBitmap == null) return;
 
-            // Используем сервис режимов для добавления персонажа
             _characterModeService.AddCharacter(
                 newCharacterBitmap, 
                 newCharacterName, 
@@ -431,17 +413,14 @@ namespace DesktopDance.Forms
                 charData.DefaultIsFlipped
             );
 
-            // Обновляем выбранного персонажа
             if (CharacterManager.Characters.Count > 0)
             {
                 if (_characterModeService.IsSingleCharacterMode)
                 {
-                    // В одиночном режиме выбираем первого (единственного)
                     _selectedCharacter = CharacterManager.Characters[0];
                 }
                 else
                 {
-                    // В режиме нескольких персонажей выбираем последнего добавленного
                     _characterUIService.SetActiveCharacterSelectedIndex(CharacterManager.Characters.Count - 1);
                     _selectedCharacter = CharacterManager.Characters[CharacterManager.Characters.Count - 1];
                 }
@@ -476,30 +455,25 @@ namespace DesktopDance.Forms
         {
             if (_selectedCharacter != null)
             {
-                // Отключаем обработчики временно
                 scaleTrackBar.ValueChanged -= scaleTrackBar_Scroll;
                 flipCheckBox.CheckedChanged -= flipCheckBox_CheckedChanged;
                 lockCheckBox.CheckedChanged -= lockCheckBox_CheckedChanged;
 
-                // Обновляем значения
                 scaleTrackBar.Value = (int)(_selectedCharacter.Scale * 100);
                 scaleLabel.Text = $"🎨 Размер: {(int)(_selectedCharacter.Scale * 100)}%";
                 flipCheckBox.Checked = _selectedCharacter.IsFlipped;
                 lockCheckBox.Checked = CharacterManager.IsLocked;
 
-                // Включаем элементы управления
                 scaleTrackBar.Enabled = true;
                 flipCheckBox.Enabled = true;
                 scaleLabel.Text = $"🎨 Размер: {(int)(_selectedCharacter.Scale * 100)}%";
 
-                // Включаем обработчики обратно
                 scaleTrackBar.ValueChanged += scaleTrackBar_Scroll;
                 flipCheckBox.CheckedChanged += flipCheckBox_CheckedChanged;
                 lockCheckBox.CheckedChanged += lockCheckBox_CheckedChanged;
             }
             else
             {
-                // Нет выбранного персонажа
                 scaleTrackBar.Enabled = false;
                 flipCheckBox.Enabled = false;
                 scaleLabel.Text = "🎨 Размер: выберите персонажа";
@@ -579,17 +553,14 @@ namespace DesktopDance.Forms
                 {
                     string sourceFilePath = openFileDialog.FileName;
                     
-                    // Копируем GIF в AppData
                     string copiedFilePath = AppSettings.CopyGifToAppData(sourceFilePath);
                     string fileName = Path.GetFileNameWithoutExtension(copiedFilePath);
                     
-                    // Добавляем в список пользовательских GIF, если его там нет
                     string gifFileName = Path.GetFileName(copiedFilePath);
                     if (!_settingsService.Settings.CustomGifFiles.Contains(gifFileName))
                     {
                         _settingsService.Settings.CustomGifFiles.Add(gifFileName);
                         
-                        // Добавляем в AvailableCharacters
                         _settingsService.Settings.AvailableCharacters.Add(new AvailableCharacterData
                         {
                             OriginalName = fileName,
@@ -599,17 +570,14 @@ namespace DesktopDance.Forms
                             DefaultIsFlipped = false
                         });
                         
-                        // Добавляем в список персонажей
                         _characterUIService.AddToAvailableList(fileName, "📎");
                         _settingsService.Settings.Save();
                         
-                        // Обновляем список в трее
                         LoadCustomGifList();
                     }
                     
                     Bitmap gifBitmap = new(copiedFilePath);
 
-                    // Используем сервис режимов для добавления персонажа
                     _characterModeService.AddCharacter(
                         gifBitmap, 
                         fileName, 
@@ -617,7 +585,6 @@ namespace DesktopDance.Forms
                         CharacterManager.GlobalFlip
                     );
 
-                    // Обновляем выбранного персонажа
                     if (CharacterManager.Characters.Count > 0)
                     {
                         if (_characterModeService.IsSingleCharacterMode)
@@ -673,21 +640,15 @@ namespace DesktopDance.Forms
        
         private void singleCharacterModeToolStripMenuItem_Click(object? sender, EventArgs e)
         {
-            // Чекбокс "Много персонажей": Checked = true (много), false (одиночный)
-            // SingleCharacterMode: true (одиночный), false (много) - инвертируем
             bool isMultipleMode = singleCharacterModeToolStripMenuItem.Checked;
             bool isSingleMode = !isMultipleMode;
             
-            // Сохраняем состояние чекбокса до переключения
             bool previousCheckedState = singleCharacterModeToolStripMenuItem.Checked;
             
-            // Используем единую точку переключения режима
             SwitchCharacterMode(isSingleMode);
             
-            // Проверяем, удалось ли переключить режим (пользователь мог отменить)
             if (_characterModeService.IsSingleCharacterMode != isSingleMode)
             {
-                // Переключение отменено, возвращаем состояние чекбокса
                 singleCharacterModeToolStripMenuItem.Checked = previousCheckedState;
             }
         }
@@ -722,19 +683,16 @@ namespace DesktopDance.Forms
             SaveSettings();
         }
 
-        // Обработчик контекстного меню - Переименовать
         private void renameMenuItem_Click(object? sender, EventArgs e)
         {
             RenameSelectedCharacter();
         }
 
-        // Обработчик контекстного меню - Удалить
         private void deleteMenuItem_Click(object? sender, EventArgs e)
         {
             RemoveSelectedCharacter();
         }
 
-        // Обработчик горячих клавиш
         private void activeCharactersListBox_KeyDown(object? sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
@@ -749,7 +707,6 @@ namespace DesktopDance.Forms
             }
         }
 
-        // Метод для переименования персонажа
         private void RenameSelectedCharacter()
         {
             int selectedIndex = _characterUIService.GetActiveCharacterSelectedIndex();
@@ -766,7 +723,6 @@ namespace DesktopDance.Forms
             }
         }
 
-        // Метод для удаления персонажа
         private void RemoveSelectedCharacter()
         {
             if (activeCharactersListBox.SelectedIndex >= 0)
@@ -780,13 +736,11 @@ namespace DesktopDance.Forms
             }
         }
 
-        // Обработчик контекстного меню - Удалить GIF
         private void deleteGifMenuItem_Click(object? sender, EventArgs e)
         {
             DeleteSelectedGif();
         }
 
-        // Обработчик горячей клавиши Delete для списка доступных GIF
         private void charactersListBox_KeyDown(object? sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
@@ -796,7 +750,6 @@ namespace DesktopDance.Forms
             }
         }
 
-        // Метод для удаления пользовательского GIF
         private void DeleteSelectedGif()
         {
             int selectedIndex = _characterUIService.GetAvailableCharacterSelectedIndex();
@@ -827,19 +780,16 @@ namespace DesktopDance.Forms
             }
         }
 
-        // Обработчик переименования доступного персонажа
         private void renameAvailableCharacterMenuItem_Click(object? sender, EventArgs e)
         {
             RenameAvailableCharacter();
         }
 
-        // Обработчик настроек персонажа
         private void characterSettingsMenuItem_Click(object? sender, EventArgs e)
         {
             ShowCharacterSettings();
         }
 
-        // Метод для переименования доступного персонажа
         private void RenameAvailableCharacter()
         {
             int selectedIndex = _characterUIService.GetAvailableCharacterSelectedIndex();
@@ -855,7 +805,6 @@ namespace DesktopDance.Forms
             }
         }
 
-        // Метод для настройки персонажа (масштаб и отзеркаливание по умолчанию)
         private void ShowCharacterSettings()
         {
             int selectedIndex = _characterUIService.GetAvailableCharacterSelectedIndex();
@@ -875,7 +824,6 @@ namespace DesktopDance.Forms
         {
             ContextMenuStrip settingsMenu = new ContextMenuStrip();
             
-            // Порядок как в трее: Много персонажей → Показывать в панели → Открывать меню → Сворачивать → Автозапуск → Тема
             ToolStripMenuItem singleModeItem = new ToolStripMenuItem("👥 Много персонажей")
             {
                 Checked = !_characterModeService.IsSingleCharacterMode,
@@ -885,7 +833,6 @@ namespace DesktopDance.Forms
             {
                 bool newSingleMode = !singleModeItem.Checked;
                 SwitchCharacterMode(newSingleMode);
-                // Обновляем чекбокс в соответствии с реальным состоянием
                 singleModeItem.Checked = !_characterModeService.IsSingleCharacterMode;
             };
             settingsMenu.Items.Add(singleModeItem);
@@ -918,7 +865,6 @@ namespace DesktopDance.Forms
             };
             settingsMenu.Items.Add(showMenuOnStartupItem);
             
-            // Сворачивать при закрытии
             ToolStripMenuItem minimizeOnCloseItem = new ToolStripMenuItem("Сворачивать при закрытии")
             {
                 Checked = _settingsService.Settings.MinimizeOnClose,
@@ -946,7 +892,6 @@ namespace DesktopDance.Forms
             
             settingsMenu.Items.Add(new ToolStripSeparator());
             
-            // Меню выбора темы
             ToolStripMenuItem themeMenuItem = new ToolStripMenuItem("🎨 Тема");
             
             ToolStripMenuItem lightThemeItem = new ToolStripMenuItem("☀️ Светлая")
@@ -983,7 +928,6 @@ namespace DesktopDance.Forms
             
             settingsMenu.Items.Add(themeMenuItem);
             
-            // Показываем меню около кнопки
             if (sender is Button btn)
             {
                 settingsMenu.Show(btn, new Point(0, btn.Height));

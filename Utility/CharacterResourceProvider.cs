@@ -8,11 +8,9 @@ namespace DesktopDance.Utility
     /// </summary>
     public static class CharacterResourceProvider
     {
-        // Константы для идентификации встроенных персонажей
         public const string BLIN4IIK_DANCE = "blin4iik Dance";
         public const string KONATA_LOVE = "Konata Love";
         
-        // Количество встроенных персонажей
         public const int BUILT_IN_CHARACTERS_COUNT = 2;
 
         /// <summary>
@@ -91,12 +89,10 @@ namespace DesktopDance.Utility
         {
             if (string.IsNullOrEmpty(charData.FilePath))
             {
-                // Встроенный персонаж
                 return GetBuiltInCharacterBitmap(charData.OriginalName);
             }
             else if (File.Exists(charData.FilePath))
             {
-                // Пользовательский GIF
                 try
                 {
                     return new Bitmap(charData.FilePath);
