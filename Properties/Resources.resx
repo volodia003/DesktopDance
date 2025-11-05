@@ -127,4 +127,13 @@
   <data name="KonataLoveDancingGif" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ezgif.com-gif-maker.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="AnimeGirl" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anime.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CoolGirl" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\party-anime.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DancingBanana" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\banana.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

@@ -10,8 +10,11 @@ namespace DesktopDance.Utility
     {
         public const string BLIN4IIK_DANCE = "blin4iik Dance";
         public const string KONATA_LOVE = "Konata Love";
+        public const string ANIME_GIRL = "Anime Girl";
+        public const string COOL_GIRL = "Cool Anime Girl";
+        public const string DANCING_BANANA = "Banana";
         
-        public const int BUILT_IN_CHARACTERS_COUNT = 2;
+        public const int BUILT_IN_CHARACTERS_COUNT = 5;
 
         /// <summary>
         /// Получает Bitmap встроенного персонажа по имени
@@ -24,6 +27,9 @@ namespace DesktopDance.Utility
             {
                 BLIN4IIK_DANCE => Properties.Resources.blin4iikDance,
                 KONATA_LOVE => Properties.Resources.KonataLoveDancingGif,
+                ANIME_GIRL => Properties.Resources.AnimeGirl,
+                COOL_GIRL => Properties.Resources.CoolGirl,
+                DANCING_BANANA => Properties.Resources.DancingBanana,
                 _ => null
             };
         }
@@ -35,7 +41,11 @@ namespace DesktopDance.Utility
         /// <returns>true, если персонаж встроенный</returns>
         public static bool IsBuiltInCharacter(string characterName)
         {
-            return characterName == BLIN4IIK_DANCE || characterName == KONATA_LOVE;
+            return characterName == BLIN4IIK_DANCE || 
+                   characterName == KONATA_LOVE || 
+                   characterName == ANIME_GIRL || 
+                   characterName == COOL_GIRL || 
+                   characterName == DANCING_BANANA;
         }
 
         /// <summary>
@@ -61,6 +71,30 @@ namespace DesktopDance.Utility
                     FilePath = "",
                     DefaultScale = 1.0f,
                     DefaultIsFlipped = false
+                },
+                new AvailableCharacterData
+                {
+                    OriginalName = ANIME_GIRL,
+                    DisplayName = ANIME_GIRL,
+                    FilePath = "",
+                    DefaultScale = 1.0f,
+                    DefaultIsFlipped = false
+                },
+                new AvailableCharacterData
+                {
+                    OriginalName = COOL_GIRL,
+                    DisplayName = COOL_GIRL,
+                    FilePath = "",
+                    DefaultScale = 1.0f,
+                    DefaultIsFlipped = false
+                },
+                new AvailableCharacterData
+                {
+                    OriginalName = DANCING_BANANA,
+                    DisplayName = DANCING_BANANA,
+                    FilePath = "",
+                    DefaultScale = 1.0f,
+                    DefaultIsFlipped = false
                 }
             };
         }
@@ -76,6 +110,9 @@ namespace DesktopDance.Utility
             {
                 0 => "🎭",  // blin4iik Dance
                 1 => "💝",  // Konata Love
+                2 => "🎀",  // Anime Girl
+                3 => "😎",  // Cool Anime Girl
+                4 => "🍌",  // Banana
                 _ => "📎"   // Пользовательский персонаж
             };
         }

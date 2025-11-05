@@ -45,6 +45,9 @@
 
   <ItemGroup>
     <Content Include="Resources\blin4iikIco.ico" />
+    <Content Include="Resources\anime.gif" />
+    <Content Include="Resources\party-anime.gif" />
+    <Content Include="Resources\banana.gif" />
   </ItemGroup>
 
   <ItemGroup>
