@@ -304,7 +304,7 @@
             scaleTrackBar.Maximum = 200;
             scaleTrackBar.Minimum = 25;
             scaleTrackBar.Name = "scaleTrackBar";
-            scaleTrackBar.Size = new Size(345, 45);
+            scaleTrackBar.Size = new Size(298, 45);
             scaleTrackBar.TabIndex = 5;
             scaleTrackBar.TickFrequency = 25;
             scaleTrackBar.Value = 100;
@@ -414,7 +414,7 @@
             settingsButton.FlatStyle = FlatStyle.Flat;
             settingsButton.Font = new Font("Segoe UI", 10F);
             settingsButton.ForeColor = Color.White;
-            settingsButton.Location = new Point(10, 60);
+            settingsButton.Location = new Point(10, 56);
             settingsButton.Name = "settingsButton";
             settingsButton.Size = new Size(298, 40);
             settingsButton.TabIndex = 1;

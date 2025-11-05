@@ -129,6 +129,7 @@ namespace DesktopDance.Services
             // Настройки
             var settingsMenuItem = new ToolStripMenuItem("⚙️ Настройки");
 
+            // Порядок пунктов как в основных настройках
             _singleCharacterModeMenuItem = new ToolStripMenuItem("👥 Много персонажей")
             {
                 CheckOnClick = true,
@@ -139,34 +140,37 @@ namespace DesktopDance.Services
 
             settingsMenuItem.DropDownItems.Add(new ToolStripSeparator());
 
-            _minimizeOnCloseMenuItem = new ToolStripMenuItem("Сворачивать при закрытии")
+            _showInTaskbarMenuItem = new ToolStripMenuItem("Показывать в панели задач")
             {
                 CheckOnClick = true,
                 Checked = true
-            };
-            _minimizeOnCloseMenuItem.Click += (s, e) => MinimizeOnCloseChanged?.Invoke(this, EventArgs.Empty);
-            settingsMenuItem.DropDownItems.Add(_minimizeOnCloseMenuItem);
-
-            _autoStartMenuItem = new ToolStripMenuItem("Автозапуск")
-            {
-                CheckOnClick = true
-            };
-            _autoStartMenuItem.Click += (s, e) => AutoStartChanged?.Invoke(this, EventArgs.Empty);
-            settingsMenuItem.DropDownItems.Add(_autoStartMenuItem);
-
-            _showInTaskbarMenuItem = new ToolStripMenuItem("Показывать в панели задач")
-            {
-                CheckOnClick = true
             };
             _showInTaskbarMenuItem.Click += (s, e) => ShowInTaskbarChanged?.Invoke(this, EventArgs.Empty);
             settingsMenuItem.DropDownItems.Add(_showInTaskbarMenuItem);
 
             _showMenuOnStartupMenuItem = new ToolStripMenuItem("Открывать меню при запуске")
             {
-                CheckOnClick = true
+                CheckOnClick = true,
+                Checked = true
             };
             _showMenuOnStartupMenuItem.Click += (s, e) => ShowMenuOnStartupChanged?.Invoke(this, EventArgs.Empty);
             settingsMenuItem.DropDownItems.Add(_showMenuOnStartupMenuItem);
+
+            _minimizeOnCloseMenuItem = new ToolStripMenuItem("Сворачивать при закрытии")
+            {
+                CheckOnClick = true,
+                Checked = false
+            };
+            _minimizeOnCloseMenuItem.Click += (s, e) => MinimizeOnCloseChanged?.Invoke(this, EventArgs.Empty);
+            settingsMenuItem.DropDownItems.Add(_minimizeOnCloseMenuItem);
+
+            _autoStartMenuItem = new ToolStripMenuItem("Автозапуск")
+            {
+                CheckOnClick = true,
+                Checked = false
+            };
+            _autoStartMenuItem.Click += (s, e) => AutoStartChanged?.Invoke(this, EventArgs.Empty);
+            settingsMenuItem.DropDownItems.Add(_autoStartMenuItem);
 
             _trayContextMenu.Items.Add(settingsMenuItem);
 

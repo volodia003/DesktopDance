@@ -30,6 +30,7 @@ namespace DesktopDance.Forms
             var themeMode = _settingsService.Settings.Theme switch
             {
                 "Dark" => ThemeService.ThemeMode.Dark,
+                "Blin4iik" => ThemeService.ThemeMode.Blin4iik,
                 "System" => ThemeService.ThemeMode.System,
                 _ => ThemeService.ThemeMode.Light
             };
@@ -329,6 +330,19 @@ namespace DesktopDance.Forms
                 }
                 
                 ForceUpdateActiveCharactersList();
+                
+                // Автоматически выбираем загруженного персонажа для управления
+                if (CharacterManager.Characters.Count > 0)
+                {
+                    _selectedCharacter = CharacterManager.Characters[0];
+                    UpdateUIForSelectedCharacter();
+                    
+                    // В режиме нескольких персонажей также обновляем индекс в списке
+                    if (!_settingsService.Settings.SingleCharacterMode)
+                    {
+                        _characterUIService.SetActiveCharacterSelectedIndex(0);
+                    }
+                }
             }
             catch
             {
@@ -861,6 +875,7 @@ namespace DesktopDance.Forms
         {
             ContextMenuStrip settingsMenu = new ContextMenuStrip();
             
+            // Порядок как в трее: Много персонажей → Показывать в панели → Открывать меню → Сворачивать → Автозапуск → Тема
             ToolStripMenuItem singleModeItem = new ToolStripMenuItem("👥 Много персонажей")
             {
                 Checked = !_characterModeService.IsSingleCharacterMode,
@@ -950,6 +965,14 @@ namespace DesktopDance.Forms
             darkThemeItem.Click += (s, ev) => ChangeTheme(ThemeService.ThemeMode.Dark);
             themeMenuItem.DropDownItems.Add(darkThemeItem);
             
+            ToolStripMenuItem blin4iikThemeItem = new ToolStripMenuItem("🎭 Blin4iik")
+            {
+                Checked = _themeService.CurrentTheme == ThemeService.ThemeMode.Blin4iik,
+                CheckOnClick = false
+            };
+            blin4iikThemeItem.Click += (s, ev) => ChangeTheme(ThemeService.ThemeMode.Blin4iik);
+            themeMenuItem.DropDownItems.Add(blin4iikThemeItem);
+            
             ToolStripMenuItem systemThemeItem = new ToolStripMenuItem("💻 Системная")
             {
                 Checked = _themeService.CurrentTheme == ThemeService.ThemeMode.System,
@@ -973,6 +996,7 @@ namespace DesktopDance.Forms
             _settingsService.Settings.Theme = newTheme switch
             {
                 ThemeService.ThemeMode.Dark => "Dark",
+                ThemeService.ThemeMode.Blin4iik => "Blin4iik",
                 ThemeService.ThemeMode.System => "System",
                 _ => "Light"
             };

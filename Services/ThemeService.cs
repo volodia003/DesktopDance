@@ -12,6 +12,7 @@ namespace DesktopDance.Services
         {
             Light,
             Dark,
+            Blin4iik,  // Особая тема в стиле blin4iik
             System  // Следует за системной темой Windows
         }
 
@@ -43,6 +44,22 @@ namespace DesktopDance.Services
             public static readonly Color Border = Color.FromArgb(60, 60, 60);
             public static readonly Color Success = Color.FromArgb(16, 185, 16);
             public static readonly Color Error = Color.FromArgb(232, 65, 50);
+        }
+
+        // Цвета для темы Blin4iik (из расписания и персонажа)
+        public static class Blin4iikTheme
+        {
+            public static readonly Color Background = Color.FromArgb(45, 35, 40); // Темно-коричневый фон
+            public static readonly Color Surface = Color.FromArgb(65, 45, 50); // Коричневый для карточек
+            public static readonly Color Primary = Color.FromArgb(220, 140, 80); // Теплый оранжевый
+            public static readonly Color PrimaryHover = Color.FromArgb(240, 160, 100); // Светлее оранжевый
+            public static readonly Color Secondary = Color.FromArgb(200, 180, 160); // Бежевый
+            public static readonly Color Text = Color.FromArgb(245, 230, 210); // Теплый светло-бежевый
+            public static readonly Color TextSecondary = Color.FromArgb(210, 180, 150); // Золотисто-бежевый
+            public static readonly Color Border = Color.FromArgb(85, 65, 70); // Темно-коричневая рамка
+            public static readonly Color Success = Color.FromArgb(200, 160, 100); // Золотистый
+            public static readonly Color Error = Color.FromArgb(220, 100, 100); // Теплый красный
+            public static readonly Color Accent = Color.FromArgb(230, 180, 120); // Золотой акцент
         }
 
         private ThemeMode _currentTheme;
@@ -95,30 +112,39 @@ namespace DesktopDance.Services
         }
 
         /// <summary>
+        /// Проверяет, является ли текущая тема темной или Blin4iik
+        /// </summary>
+        private bool IsDarkOrBlin4iikTheme()
+        {
+            var effective = GetEffectiveTheme();
+            return effective == ThemeMode.Dark || effective == ThemeMode.Blin4iik;
+        }
+
+        /// <summary>
         /// Применяет тему к форме
         /// </summary>
         public void ApplyTheme(Form form)
         {
-            var isDark = GetEffectiveTheme() == ThemeMode.Dark;
+            var effectiveTheme = GetEffectiveTheme();
             
-            form.BackColor = isDark ? DarkTheme.Background : LightTheme.Background;
-            form.ForeColor = isDark ? DarkTheme.Text : LightTheme.Text;
+            form.BackColor = GetBackgroundColor();
+            form.ForeColor = GetTextColor();
             
-            ApplyThemeToControls(form.Controls, isDark);
+            ApplyThemeToControls(form.Controls, effectiveTheme);
         }
 
         /// <summary>
         /// Применяет тему к элементам управления рекурсивно
         /// </summary>
-        private void ApplyThemeToControls(Control.ControlCollection controls, bool isDark)
+        private void ApplyThemeToControls(Control.ControlCollection controls, ThemeMode theme)
         {
             foreach (Control control in controls)
             {
-                ApplyThemeToControl(control, isDark);
+                ApplyThemeToControl(control, theme);
                 
                 if (control.HasChildren)
                 {
-                    ApplyThemeToControls(control.Controls, isDark);
+                    ApplyThemeToControls(control.Controls, theme);
                 }
             }
         }
@@ -126,33 +152,39 @@ namespace DesktopDance.Services
         /// <summary>
         /// Применяет тему к конкретному элементу управления
         /// </summary>
-        private void ApplyThemeToControl(Control control, bool isDark)
+        private void ApplyThemeToControl(Control control, ThemeMode theme)
         {
+            var background = GetBackgroundColorForTheme(theme);
+            var surface = GetSurfaceColorForTheme(theme);
+            var text = GetTextColorForTheme(theme);
+            var primary = GetPrimaryColorForTheme(theme);
+            var primaryHover = GetPrimaryHoverColorForTheme(theme);
+
             switch (control)
             {
                 case Button button:
-                    button.BackColor = isDark ? DarkTheme.Primary : LightTheme.Primary;
+                    button.BackColor = primary;
                     button.ForeColor = Color.White;
                     button.FlatStyle = FlatStyle.Flat;
                     button.FlatAppearance.BorderSize = 0;
-                    button.FlatAppearance.MouseOverBackColor = isDark ? DarkTheme.PrimaryHover : LightTheme.PrimaryHover;
+                    button.FlatAppearance.MouseOverBackColor = primaryHover;
                     break;
 
                 case TextBox textBox:
-                    textBox.BackColor = isDark ? DarkTheme.Surface : LightTheme.Surface;
-                    textBox.ForeColor = isDark ? DarkTheme.Text : LightTheme.Text;
+                    textBox.BackColor = surface;
+                    textBox.ForeColor = text;
                     textBox.BorderStyle = BorderStyle.None;
                     break;
 
                 case ListBox listBox:
-                    listBox.BackColor = isDark ? DarkTheme.Surface : LightTheme.Surface;
-                    listBox.ForeColor = isDark ? DarkTheme.Text : LightTheme.Text;
+                    listBox.BackColor = surface;
+                    listBox.ForeColor = text;
                     listBox.BorderStyle = BorderStyle.None;
                     break;
 
                 case CheckBox checkBox:
                     checkBox.BackColor = Color.Transparent;
-                    checkBox.ForeColor = isDark ? DarkTheme.Text : LightTheme.Text;
+                    checkBox.ForeColor = text;
                     break;
 
                 case Label label:
@@ -160,45 +192,45 @@ namespace DesktopDance.Services
                     {
                         label.BackColor = Color.Transparent;
                     }
-                    label.ForeColor = isDark ? DarkTheme.Text : LightTheme.Text;
+                    label.ForeColor = text;
                     break;
 
                 case Panel panel:
                     // Проверяем, если это панель с особым стилем (по имени)
                     if (panel.Name.Contains("Panel") || panel.BorderStyle != BorderStyle.None)
                     {
-                        panel.BackColor = isDark ? DarkTheme.Surface : LightTheme.Surface;
-                        panel.ForeColor = isDark ? DarkTheme.Text : LightTheme.Text;
+                        panel.BackColor = surface;
+                        panel.ForeColor = text;
                     }
                     break;
 
                 case GroupBox groupBox:
-                    groupBox.ForeColor = isDark ? DarkTheme.Text : LightTheme.Text;
+                    groupBox.ForeColor = text;
                     break;
 
                 case TrackBar trackBar:
-                    trackBar.BackColor = isDark ? DarkTheme.Background : LightTheme.Background;
+                    trackBar.BackColor = background;
                     break;
 
                 case MenuStrip menuStrip:
-                    menuStrip.BackColor = isDark ? DarkTheme.Surface : LightTheme.Surface;
-                    menuStrip.ForeColor = isDark ? DarkTheme.Text : LightTheme.Text;
-                    ApplyThemeToMenuItems(menuStrip.Items, isDark);
+                    menuStrip.BackColor = surface;
+                    menuStrip.ForeColor = text;
+                    ApplyThemeToMenuItems(menuStrip.Items, theme);
                     break;
 
                 case ContextMenuStrip contextMenu:
-                    contextMenu.BackColor = isDark ? DarkTheme.Surface : LightTheme.Surface;
-                    contextMenu.ForeColor = isDark ? DarkTheme.Text : LightTheme.Text;
-                    ApplyThemeToMenuItems(contextMenu.Items, isDark);
+                    contextMenu.BackColor = surface;
+                    contextMenu.ForeColor = text;
+                    ApplyThemeToMenuItems(contextMenu.Items, theme);
                     break;
 
                 default:
                     // Для остальных контролов применяем базовые цвета
                     if (control.BackColor != Color.Transparent)
                     {
-                        control.BackColor = isDark ? DarkTheme.Background : LightTheme.Background;
+                        control.BackColor = background;
                     }
-                    control.ForeColor = isDark ? DarkTheme.Text : LightTheme.Text;
+                    control.ForeColor = text;
                     break;
             }
         }
@@ -206,19 +238,73 @@ namespace DesktopDance.Services
         /// <summary>
         /// Применяет тему к элементам меню
         /// </summary>
-        private void ApplyThemeToMenuItems(ToolStripItemCollection items, bool isDark)
+        private void ApplyThemeToMenuItems(ToolStripItemCollection items, ThemeMode theme)
         {
+            var surface = GetSurfaceColorForTheme(theme);
+            var text = GetTextColorForTheme(theme);
+
             foreach (ToolStripItem item in items)
             {
-                item.BackColor = isDark ? DarkTheme.Surface : LightTheme.Surface;
-                item.ForeColor = isDark ? DarkTheme.Text : LightTheme.Text;
+                item.BackColor = surface;
+                item.ForeColor = text;
 
                 if (item is ToolStripMenuItem menuItem && menuItem.HasDropDownItems)
                 {
-                    menuItem.DropDown.BackColor = isDark ? DarkTheme.Surface : LightTheme.Surface;
-                    ApplyThemeToMenuItems(menuItem.DropDownItems, isDark);
+                    menuItem.DropDown.BackColor = surface;
+                    ApplyThemeToMenuItems(menuItem.DropDownItems, theme);
                 }
             }
+        }
+
+        // Вспомогательные методы для получения цветов по теме
+        private Color GetBackgroundColorForTheme(ThemeMode theme)
+        {
+            return theme switch
+            {
+                ThemeMode.Dark => DarkTheme.Background,
+                ThemeMode.Blin4iik => Blin4iikTheme.Background,
+                _ => LightTheme.Background
+            };
+        }
+
+        private Color GetSurfaceColorForTheme(ThemeMode theme)
+        {
+            return theme switch
+            {
+                ThemeMode.Dark => DarkTheme.Surface,
+                ThemeMode.Blin4iik => Blin4iikTheme.Surface,
+                _ => LightTheme.Surface
+            };
+        }
+
+        private Color GetTextColorForTheme(ThemeMode theme)
+        {
+            return theme switch
+            {
+                ThemeMode.Dark => DarkTheme.Text,
+                ThemeMode.Blin4iik => Blin4iikTheme.Text,
+                _ => LightTheme.Text
+            };
+        }
+
+        private Color GetPrimaryColorForTheme(ThemeMode theme)
+        {
+            return theme switch
+            {
+                ThemeMode.Dark => DarkTheme.Primary,
+                ThemeMode.Blin4iik => Blin4iikTheme.Primary,
+                _ => LightTheme.Primary
+            };
+        }
+
+        private Color GetPrimaryHoverColorForTheme(ThemeMode theme)
+        {
+            return theme switch
+            {
+                ThemeMode.Dark => DarkTheme.PrimaryHover,
+                ThemeMode.Blin4iik => Blin4iikTheme.PrimaryHover,
+                _ => LightTheme.PrimaryHover
+            };
         }
 
         /// <summary>
@@ -226,7 +312,7 @@ namespace DesktopDance.Services
         /// </summary>
         public Color GetBackgroundColor()
         {
-            return GetEffectiveTheme() == ThemeMode.Dark ? DarkTheme.Background : LightTheme.Background;
+            return GetBackgroundColorForTheme(GetEffectiveTheme());
         }
 
         /// <summary>
@@ -234,7 +320,7 @@ namespace DesktopDance.Services
         /// </summary>
         public Color GetTextColor()
         {
-            return GetEffectiveTheme() == ThemeMode.Dark ? DarkTheme.Text : LightTheme.Text;
+            return GetTextColorForTheme(GetEffectiveTheme());
         }
 
         /// <summary>
@@ -242,7 +328,7 @@ namespace DesktopDance.Services
         /// </summary>
         public Color GetSurfaceColor()
         {
-            return GetEffectiveTheme() == ThemeMode.Dark ? DarkTheme.Surface : LightTheme.Surface;
+            return GetSurfaceColorForTheme(GetEffectiveTheme());
         }
 
         /// <summary>
@@ -250,7 +336,7 @@ namespace DesktopDance.Services
         /// </summary>
         public Color GetPrimaryColor()
         {
-            return GetEffectiveTheme() == ThemeMode.Dark ? DarkTheme.Primary : LightTheme.Primary;
+            return GetPrimaryColorForTheme(GetEffectiveTheme());
         }
     }
 }

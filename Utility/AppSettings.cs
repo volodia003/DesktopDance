@@ -28,8 +28,8 @@ namespace DesktopDance.Utility
         public float Scale { get; set; } = 1.0f;
         public bool IsFlipped { get; set; } = false;
         public bool IsLocked { get; set; } = false;
-        public bool MinimizeOnClose { get; set; } = false;
-        public bool SingleCharacterMode { get; set; } = false; // По умолчанию режим нескольких персонажей (true = одиночный, false = много)
+        public bool MinimizeOnClose { get; set; } = false; // По умолчанию НЕ сворачивать при закрытии
+        public bool SingleCharacterMode { get; set; } = true; // По умолчанию одиночный режим (true = одиночный, false = много)
         public bool ShowInTaskbar { get; set; } = true; // Показывать в панели задач
         public bool ShowMenuOnStartup { get; set; } = true; // Открывать меню при запуске
         public string Theme { get; set; } = "Light"; // Тема: Light, Dark, System
