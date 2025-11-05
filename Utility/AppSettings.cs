@@ -57,20 +57,40 @@ namespace DesktopDance.Utility
             try
             {
                 if (!Directory.Exists(AppDataFolder))
+                {
                     Directory.CreateDirectory(AppDataFolder);
+                    Logger.Info($"Создана папка AppData: {AppDataFolder}");
+                }
+                
                 if (!Directory.Exists(CustomGifsFolder))
+                {
                     Directory.CreateDirectory(CustomGifsFolder);
+                    Logger.Info($"Создана папка CustomGifs: {CustomGifsFolder}");
+                }
 
                 if (File.Exists(SettingsFilePath))
                 {
                     string json = File.ReadAllText(SettingsFilePath);
                     var settings = JsonSerializer.Deserialize<AppSettings>(json);
-                    return settings ?? new AppSettings();
+                    
+                    if (settings != null)
+                    {
+                        Logger.Info("Настройки успешно загружены");
+                        return settings;
+                    }
+                    else
+                    {
+                        Logger.Warning("Не удалось десериализовать настройки, используются значения по умолчанию");
+                    }
+                }
+                else
+                {
+                    Logger.Info("Файл настроек не найден, создаются настройки по умолчанию");
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                // Если не удалось загрузить, возвращаем настройки по умолчанию
+                Logger.Error("Ошибка при загрузке настроек", ex);
             }
             return new AppSettings();
         }
@@ -80,7 +100,10 @@ namespace DesktopDance.Utility
             try
             {
                 if (!Directory.Exists(CustomGifsFolder))
+                {
                     Directory.CreateDirectory(CustomGifsFolder);
+                    Logger.Info($"Создана папка CustomGifs: {CustomGifsFolder}");
+                }
 
                 string fileName = Path.GetFileName(sourceFilePath);
                 string destFilePath = Path.Combine(CustomGifsFolder, fileName);
@@ -97,10 +120,12 @@ namespace DesktopDance.Utility
                 }
 
                 File.Copy(sourceFilePath, destFilePath, false);
+                Logger.Info($"GIF скопирован в AppData: {fileName}");
                 return destFilePath;
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.Error($"Не удалось скопировать GIF '{sourceFilePath}' в AppData", ex);
                 return sourceFilePath; // Если не удалось скопировать, используем исходный путь
             }
         }
@@ -113,6 +138,7 @@ namespace DesktopDance.Utility
                 if (!Directory.Exists(directory))
                 {
                     Directory.CreateDirectory(directory);
+                    Logger.Info($"Создана папка для настроек: {directory}");
                 }
 
                 var options = new JsonSerializerOptions
@@ -121,9 +147,11 @@ namespace DesktopDance.Utility
                 };
                 string json = JsonSerializer.Serialize(this, options);
                 File.WriteAllText(SettingsFilePath, json);
+                Logger.Debug("Настройки успешно сохранены");
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.Error("Ошибка при сохранении настроек", ex);
             }
         }
     }
