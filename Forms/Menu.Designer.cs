@@ -410,7 +410,7 @@
             // 
             // settingsButton
             // 
-            settingsButton.BackColor = Color.FromArgb(108, 117, 125);
+            settingsButton.BackColor = Color.FromArgb(0, 123, 255);
             settingsButton.FlatStyle = FlatStyle.Flat;
             settingsButton.Font = new Font("Segoe UI", 10F);
             settingsButton.ForeColor = Color.White;
@@ -424,7 +424,7 @@
             // 
             // button3
             // 
-            button3.BackColor = Color.FromArgb(255, 193, 7);
+            button3.BackColor = Color.FromArgb(0, 123, 255);
             button3.FlatStyle = FlatStyle.Flat;
             button3.Font = new Font("Segoe UI", 10F);
             button3.ForeColor = Color.Black;

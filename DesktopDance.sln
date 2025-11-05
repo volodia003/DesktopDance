@@ -8,13 +8,25 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|ARM32 = Debug|ARM32
 		Release|Any CPU = Release|Any CPU
+		Release|ARM32 = Release|ARM32
+		вв|Any CPU = вв|Any CPU
+		вв|ARM32 = вв|ARM32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{719869AA-CA9F-4DF9-8403-641EDF06AD01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{719869AA-CA9F-4DF9-8403-641EDF06AD01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{719869AA-CA9F-4DF9-8403-641EDF06AD01}.Debug|ARM32.ActiveCfg = Debug|ARM32
+		{719869AA-CA9F-4DF9-8403-641EDF06AD01}.Debug|ARM32.Build.0 = Debug|ARM32
 		{719869AA-CA9F-4DF9-8403-641EDF06AD01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{719869AA-CA9F-4DF9-8403-641EDF06AD01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{719869AA-CA9F-4DF9-8403-641EDF06AD01}.Release|ARM32.ActiveCfg = Release|ARM32
+		{719869AA-CA9F-4DF9-8403-641EDF06AD01}.Release|ARM32.Build.0 = Release|ARM32
+		{719869AA-CA9F-4DF9-8403-641EDF06AD01}.вв|Any CPU.ActiveCfg = Release|Any CPU
+		{719869AA-CA9F-4DF9-8403-641EDF06AD01}.вв|Any CPU.Build.0 = Release|Any CPU
+		{719869AA-CA9F-4DF9-8403-641EDF06AD01}.вв|ARM32.ActiveCfg = Debug|ARM32
+		{719869AA-CA9F-4DF9-8403-641EDF06AD01}.вв|ARM32.Build.0 = Debug|ARM32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -40,6 +40,7 @@
     <Product>Desktop Dance</Product>
     <Copyright>© 2024 Desktop Dance</Copyright>
     <Description>Анимированные персонажи на вашем рабочем столе!</Description>
+    <Platforms>AnyCPU;ARM32</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
