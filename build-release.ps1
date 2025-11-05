@@ -31,7 +31,7 @@ Write-Host "✅ Очистка завершена" -ForegroundColor Green
 # Параметры сборки
 $runtime = "win-x64"
 $configuration = "Release"
-$output = "bin\Release\net7.0-windows\$runtime\publish"
+$output = "bin\Release\net8.0-windows\$runtime\publish"
 
 Write-Host "⚙️  Начинаю сборку..." -ForegroundColor Yellow
 

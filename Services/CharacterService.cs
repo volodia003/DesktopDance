@@ -1,8 +1,8 @@
-using DesktopKonata.Forms;
-using DesktopKonata.Utility;
+using DesktopDance.Forms;
+using DesktopDance.Utility;
 using System.Drawing;
 
-namespace DesktopKonata.Services
+namespace DesktopDance.Services
 {
     /// <summary>
     /// Сервис для работы с персонажами (загрузка ресурсов, создание окон)
@@ -17,12 +17,7 @@ namespace DesktopKonata.Services
         /// </summary>
         public Bitmap? GetBuiltInCharacterBitmap(string characterName)
         {
-            return characterName switch
-            {
-                "blin4iik Dance" => DesktopDance.Properties.Resources.blin4iikDance,
-                "Konata Love" => DesktopDance.Properties.Resources.KonataLoveDancingGif,
-                _ => null
-            };
+            return CharacterResourceProvider.GetBuiltInCharacterBitmap(characterName);
         }
 
         /// <summary>
@@ -30,17 +25,7 @@ namespace DesktopKonata.Services
         /// </summary>
         public Bitmap? LoadCharacterBitmap(AvailableCharacterData charData)
         {
-            if (string.IsNullOrEmpty(charData.FilePath))
-            {
-                // Встроенный персонаж
-                return GetBuiltInCharacterBitmap(charData.OriginalName);
-            }
-            else if (File.Exists(charData.FilePath))
-            {
-                // Пользовательский GIF
-                return new Bitmap(charData.FilePath);
-            }
-            return null;
+            return CharacterResourceProvider.LoadCharacterBitmap(charData);
         }
 
         /// <summary>

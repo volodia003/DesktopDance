@@ -1,4 +1,4 @@
-﻿namespace DesktopKonata.Forms
+﻿namespace DesktopDance.Forms
 {
     partial class Menu
     {
@@ -100,7 +100,7 @@
             // 
             contextMenuStripAvailableGifs.Items.AddRange(new ToolStripItem[] { renameAvailableCharacterMenuItem, characterSettingsMenuItem, deleteGifMenuItem });
             contextMenuStripAvailableGifs.Name = "contextMenuStripAvailableGifs";
-            contextMenuStripAvailableGifs.Size = new Size(214, 76);
+            contextMenuStripAvailableGifs.Size = new Size(214, 70);
             // 
             // renameAvailableCharacterMenuItem
             // 
@@ -138,7 +138,7 @@
             // 
             // loadCustomGifToolStripMenuItem
             // 
-            loadCustomGifToolStripMenuItem.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular, GraphicsUnit.Point);
+            loadCustomGifToolStripMenuItem.Font = new Font("Segoe UI", 9.5F);
             loadCustomGifToolStripMenuItem.Name = "loadCustomGifToolStripMenuItem";
             loadCustomGifToolStripMenuItem.Size = new Size(163, 20);
             loadCustomGifToolStripMenuItem.Text = "📁 Загрузить свой GIF...";
@@ -148,7 +148,7 @@
             // 
             settingsToolStripMenuItem.Alignment = ToolStripItemAlignment.Right;
             settingsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { singleCharacterModeToolStripMenuItem, toolStripSeparator1, showTrayIconToolStripMenuItem, showMenuOnStartupToolStripMenuItem, minimizeOnCloseToolStripMenuItem, autoStartToolStripMenuItem });
-            settingsToolStripMenuItem.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular, GraphicsUnit.Point);
+            settingsToolStripMenuItem.Font = new Font("Segoe UI", 9.5F);
             settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             settingsToolStripMenuItem.Size = new Size(105, 20);
             settingsToolStripMenuItem.Text = "⚙️ Настройки";
@@ -157,20 +157,20 @@
             // 
             singleCharacterModeToolStripMenuItem.CheckOnClick = true;
             singleCharacterModeToolStripMenuItem.Name = "singleCharacterModeToolStripMenuItem";
-            singleCharacterModeToolStripMenuItem.Size = new Size(254, 22);
+            singleCharacterModeToolStripMenuItem.Size = new Size(253, 22);
             singleCharacterModeToolStripMenuItem.Text = "👥 Много персонажей";
             singleCharacterModeToolStripMenuItem.Click += singleCharacterModeToolStripMenuItem_Click;
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(251, 6);
+            toolStripSeparator1.Size = new Size(250, 6);
             // 
             // showTrayIconToolStripMenuItem
             // 
             showTrayIconToolStripMenuItem.CheckOnClick = true;
             showTrayIconToolStripMenuItem.Name = "showTrayIconToolStripMenuItem";
-            showTrayIconToolStripMenuItem.Size = new Size(254, 22);
+            showTrayIconToolStripMenuItem.Size = new Size(253, 22);
             showTrayIconToolStripMenuItem.Text = "Показывать в панели задач";
             showTrayIconToolStripMenuItem.Click += showTrayIconToolStripMenuItem_Click;
             // 
@@ -178,7 +178,7 @@
             // 
             showMenuOnStartupToolStripMenuItem.CheckOnClick = true;
             showMenuOnStartupToolStripMenuItem.Name = "showMenuOnStartupToolStripMenuItem";
-            showMenuOnStartupToolStripMenuItem.Size = new Size(254, 22);
+            showMenuOnStartupToolStripMenuItem.Size = new Size(253, 22);
             showMenuOnStartupToolStripMenuItem.Text = "Открывать меню при запуске";
             showMenuOnStartupToolStripMenuItem.Click += showMenuOnStartupToolStripMenuItem_Click;
             // 
@@ -188,7 +188,7 @@
             minimizeOnCloseToolStripMenuItem.CheckOnClick = true;
             minimizeOnCloseToolStripMenuItem.CheckState = CheckState.Checked;
             minimizeOnCloseToolStripMenuItem.Name = "minimizeOnCloseToolStripMenuItem";
-            minimizeOnCloseToolStripMenuItem.Size = new Size(254, 22);
+            minimizeOnCloseToolStripMenuItem.Size = new Size(253, 22);
             minimizeOnCloseToolStripMenuItem.Text = "Сворачивать при закрытии";
             minimizeOnCloseToolStripMenuItem.Click += minimizeOnCloseToolStripMenuItem_Click;
             // 
@@ -196,7 +196,7 @@
             // 
             autoStartToolStripMenuItem.CheckOnClick = true;
             autoStartToolStripMenuItem.Name = "autoStartToolStripMenuItem";
-            autoStartToolStripMenuItem.Size = new Size(254, 22);
+            autoStartToolStripMenuItem.Size = new Size(253, 22);
             autoStartToolStripMenuItem.Text = "Автозапуск";
             autoStartToolStripMenuItem.Click += autoStartToolStripMenuItem_Click;
             // 
@@ -205,7 +205,7 @@
             charactersListBox.BackColor = Color.White;
             charactersListBox.BorderStyle = BorderStyle.None;
             charactersListBox.ContextMenuStrip = contextMenuStripAvailableGifs;
-            charactersListBox.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular, GraphicsUnit.Point);
+            charactersListBox.Font = new Font("Segoe UI", 9.5F);
             charactersListBox.FormattingEnabled = true;
             charactersListBox.ItemHeight = 17;
             charactersListBox.Items.AddRange(new object[] { "🎭 blin4iik Dance", "💝 Konata Love" });
@@ -219,7 +219,7 @@
             // charactersLabel
             // 
             charactersLabel.AutoSize = true;
-            charactersLabel.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            charactersLabel.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             charactersLabel.ForeColor = Color.FromArgb(44, 62, 80);
             charactersLabel.Location = new Point(10, 10);
             charactersLabel.Name = "charactersLabel";
@@ -232,7 +232,7 @@
             activeCharactersListBox.BackColor = Color.White;
             activeCharactersListBox.BorderStyle = BorderStyle.None;
             activeCharactersListBox.ContextMenuStrip = contextMenuStripCharacters;
-            activeCharactersListBox.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular, GraphicsUnit.Point);
+            activeCharactersListBox.Font = new Font("Segoe UI", 9.5F);
             activeCharactersListBox.FormattingEnabled = true;
             activeCharactersListBox.ItemHeight = 17;
             activeCharactersListBox.Location = new Point(10, 40);
@@ -245,7 +245,7 @@
             // activeCharactersLabel
             // 
             activeCharactersLabel.AutoSize = true;
-            activeCharactersLabel.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            activeCharactersLabel.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             activeCharactersLabel.ForeColor = Color.FromArgb(44, 62, 80);
             activeCharactersLabel.Location = new Point(10, 10);
             activeCharactersLabel.Name = "activeCharactersLabel";
@@ -257,7 +257,7 @@
             // 
             removeCharacterButton.BackColor = Color.FromArgb(220, 53, 69);
             removeCharacterButton.FlatStyle = FlatStyle.Flat;
-            removeCharacterButton.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            removeCharacterButton.Font = new Font("Segoe UI", 9F);
             removeCharacterButton.ForeColor = Color.White;
             removeCharacterButton.Location = new Point(999, 999);
             removeCharacterButton.Name = "removeCharacterButton";
@@ -272,7 +272,7 @@
             // 
             button1.BackColor = Color.FromArgb(220, 53, 69);
             button1.FlatStyle = FlatStyle.Flat;
-            button1.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular, GraphicsUnit.Point);
+            button1.Font = new Font("Segoe UI", 9.5F);
             button1.ForeColor = Color.White;
             button1.Location = new Point(999, 999);
             button1.Name = "button1";
@@ -287,7 +287,7 @@
             // 
             button2.BackColor = Color.FromArgb(108, 117, 125);
             button2.FlatStyle = FlatStyle.Flat;
-            button2.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular, GraphicsUnit.Point);
+            button2.Font = new Font("Segoe UI", 9.5F);
             button2.ForeColor = Color.White;
             button2.Location = new Point(999, 999);
             button2.Name = "button2";
@@ -313,7 +313,7 @@
             // scaleLabel
             // 
             scaleLabel.AutoSize = true;
-            scaleLabel.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            scaleLabel.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             scaleLabel.ForeColor = Color.FromArgb(44, 62, 80);
             scaleLabel.Location = new Point(10, 10);
             scaleLabel.Name = "scaleLabel";
@@ -324,7 +324,7 @@
             // flipCheckBox
             // 
             flipCheckBox.AutoSize = true;
-            flipCheckBox.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            flipCheckBox.Font = new Font("Segoe UI", 10F);
             flipCheckBox.ForeColor = Color.FromArgb(44, 62, 80);
             flipCheckBox.Location = new Point(10, 100);
             flipCheckBox.Name = "flipCheckBox";
@@ -337,7 +337,7 @@
             // lockCheckBox
             // 
             lockCheckBox.AutoSize = true;
-            lockCheckBox.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            lockCheckBox.Font = new Font("Segoe UI", 10F);
             lockCheckBox.ForeColor = Color.FromArgb(44, 62, 80);
             lockCheckBox.Location = new Point(10, 135);
             lockCheckBox.Name = "lockCheckBox";
@@ -398,7 +398,7 @@
             // 
             loadGifButton.BackColor = Color.FromArgb(0, 123, 255);
             loadGifButton.FlatStyle = FlatStyle.Flat;
-            loadGifButton.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            loadGifButton.Font = new Font("Segoe UI", 10F);
             loadGifButton.ForeColor = Color.White;
             loadGifButton.Location = new Point(10, 10);
             loadGifButton.Name = "loadGifButton";
@@ -412,7 +412,7 @@
             // 
             settingsButton.BackColor = Color.FromArgb(108, 117, 125);
             settingsButton.FlatStyle = FlatStyle.Flat;
-            settingsButton.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            settingsButton.Font = new Font("Segoe UI", 10F);
             settingsButton.ForeColor = Color.White;
             settingsButton.Location = new Point(10, 60);
             settingsButton.Name = "settingsButton";
@@ -426,7 +426,7 @@
             // 
             button3.BackColor = Color.FromArgb(255, 193, 7);
             button3.FlatStyle = FlatStyle.Flat;
-            button3.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            button3.Font = new Font("Segoe UI", 10F);
             button3.ForeColor = Color.Black;
             button3.Location = new Point(10, 106);
             button3.Name = "button3";
@@ -450,7 +450,7 @@
             Controls.Add(button2);
             Controls.Add(button1);
             Controls.Add(menuStrip2);
-            Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            Font = new Font("Segoe UI", 9F);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;

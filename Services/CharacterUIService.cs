@@ -1,7 +1,7 @@
-using DesktopKonata.Utility;
+using DesktopDance.Utility;
 using System.Windows.Forms;
 
-namespace DesktopKonata.Services
+namespace DesktopDance.Services
 {
     /// <summary>
     /// Сервис для управления отображением списков персонажей в UI
@@ -34,24 +34,12 @@ namespace DesktopKonata.Services
             {
                 _availableCharactersListBox.Items.Clear();
                 
-                // Добавляем встроенных персонажей (первые 2)
-                for (int i = 0; i < 2 && i < _settings.AvailableCharacters.Count; i++)
+                // Добавляем всех персонажей с правильными иконками
+                for (int i = 0; i < _settings.AvailableCharacters.Count; i++)
                 {
                     var charData = _settings.AvailableCharacters[i];
-                    string icon = i switch
-                    {
-                        0 => "🎭",
-                        1 => "💝",
-                        _ => "🎭"
-                    };
+                    string icon = CharacterResourceProvider.GetCharacterIcon(i);
                     _availableCharactersListBox.Items.Add($"{icon} {charData.DisplayName}");
-                }
-
-                // Добавляем пользовательских персонажей
-                for (int i = 2; i < _settings.AvailableCharacters.Count; i++)
-                {
-                    var charData = _settings.AvailableCharacters[i];
-                    _availableCharactersListBox.Items.Add($"📎 {charData.DisplayName}");
                 }
             }
             catch

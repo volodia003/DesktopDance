@@ -1,6 +1,6 @@
-using DesktopKonata.Utility;
+using DesktopDance.Utility;
 
-namespace DesktopKonata.Services
+namespace DesktopDance.Services
 {
     /// <summary>
     /// Стратегия для режима нескольких персонажей

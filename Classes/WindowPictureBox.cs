@@ -1,4 +1,4 @@
-﻿namespace DesktopKonata.Utility
+﻿namespace DesktopDance.Utility
 {
     public class WindowPictureBox : PictureBox
     {

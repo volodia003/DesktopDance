@@ -1,6 +1,6 @@
-using DesktopKonata.Forms;
+using DesktopDance.Forms;
 
-namespace DesktopKonata
+namespace DesktopDance
 {
     public static class Program
     {

@@ -1,9 +1,9 @@
-﻿using DesktopKonata.Utility;
-using DesktopKonata.Services;
+﻿using DesktopDance.Utility;
+using DesktopDance.Services;
 using System.Windows.Forms;
 using Microsoft.Win32;
 
-namespace DesktopKonata.Forms
+namespace DesktopDance.Forms
 {
     public partial class Menu : Form
     {
@@ -14,6 +14,7 @@ namespace DesktopKonata.Forms
         private readonly CharacterService _characterService;
         private readonly CharacterManagementService _characterManagementService;
         private readonly CharacterModeService _characterModeService;
+        private readonly ThemeService _themeService;
         private CharacterUIService _characterUIService = null!; // Инициализируется после InitializeComponent()
         private CharacterEntity? _selectedCharacter;
         private System.Windows.Forms.Timer _updateTimer = null!; // Инициализируется в SetupUpdateTimer()
@@ -24,6 +25,16 @@ namespace DesktopKonata.Forms
             
             _settingsService = new SettingsService();
             _settingsService.InitializeAvailableCharacters();
+            
+            // Инициализация ThemeService
+            var themeMode = _settingsService.Settings.Theme switch
+            {
+                "Dark" => ThemeService.ThemeMode.Dark,
+                "System" => ThemeService.ThemeMode.System,
+                _ => ThemeService.ThemeMode.Light
+            };
+            _themeService = new ThemeService(themeMode);
+            _themeService.ThemeChanged += OnThemeChanged;
             
             _characterService = new CharacterService();
             _characterManagementService = new CharacterManagementService(_settingsService.Settings);
@@ -49,6 +60,9 @@ namespace DesktopKonata.Forms
             ApplySettings();
             UpdateUIForMode(); // Применяем режим персонажей при запуске
             SetupUpdateTimer();
+            
+            // Применяем тему
+            _themeService.ApplyTheme(this);
             
             if (!_settingsService.Settings.ShowMenuOnStartup)
             {
@@ -293,20 +307,13 @@ namespace DesktopKonata.Forms
                 {
                     Bitmap? characterBitmap = null;
                     
-                    // Если есть путь к файлу - это пользовательский GIF
-                    if (!string.IsNullOrEmpty(charData.FilePath) && File.Exists(charData.FilePath))
+                    // Используем ResourceProvider для загрузки bitmap
+                    var availableChar = _settingsService.Settings.AvailableCharacters.FirstOrDefault(ac => 
+                        ac.DisplayName == charData.Name || ac.OriginalName == charData.Name);
+                    
+                    if (availableChar != null)
                     {
-                        characterBitmap = new Bitmap(charData.FilePath);
-                    }
-                    else
-                    {
-                        // Встроенный персонаж
-                        characterBitmap = charData.Name switch
-                        {
-                            "blin4iik Dance" => DesktopDance.Properties.Resources.blin4iikDance,
-                            "Konata Love" => DesktopDance.Properties.Resources.KonataLoveDancingGif,
-                            _ => null
-                        };
+                        characterBitmap = CharacterResourceProvider.LoadCharacterBitmap(availableChar);
                     }
                     
                     if (characterBitmap != null)
@@ -383,7 +390,8 @@ namespace DesktopKonata.Forms
             _characterUIService.LoadAvailableCharactersList();
             
             // Обновляем список пользовательских персонажей в трее
-            var customCharacters = _settingsService.Settings.AvailableCharacters.Skip(2).ToList();
+            var customCharacters = _settingsService.Settings.AvailableCharacters
+                .Skip(CharacterResourceProvider.BUILT_IN_CHARACTERS_COUNT).ToList();
             _trayIconService.UpdateCustomCharacters(customCharacters);
         }
 
@@ -396,25 +404,8 @@ namespace DesktopKonata.Forms
             string newCharacterName = charData.DisplayName;
             Bitmap? newCharacterBitmap = null;
 
-            // Получаем bitmap для персонажа
-            if (string.IsNullOrEmpty(charData.FilePath))
-            {
-                // Встроенный персонаж
-                newCharacterBitmap = charData.OriginalName switch
-                {
-                    "blin4iik Dance" => DesktopDance.Properties.Resources.blin4iikDance,
-                    "Konata Love" => DesktopDance.Properties.Resources.KonataLoveDancingGif,
-                    _ => null
-                };
-            }
-            else
-            {
-                // Пользовательский GIF
-                if (File.Exists(charData.FilePath))
-                {
-                    newCharacterBitmap = new Bitmap(charData.FilePath);
-                }
-            }
+            // Получаем bitmap для персонажа через ResourceProvider
+            newCharacterBitmap = CharacterResourceProvider.LoadCharacterBitmap(charData);
 
             if (newCharacterBitmap == null) return;
 
@@ -795,7 +786,7 @@ namespace DesktopKonata.Forms
         private void DeleteSelectedGif()
         {
             int selectedIndex = _characterUIService.GetAvailableCharacterSelectedIndex();
-            if (selectedIndex < 2) // Первые 2 - встроенные персонажи
+            if (selectedIndex < CharacterResourceProvider.BUILT_IN_CHARACTERS_COUNT)
                 return;
 
             var charData = _characterManagementService.GetAvailableCharacter(selectedIndex);
@@ -938,11 +929,59 @@ namespace DesktopKonata.Forms
             };
             settingsMenu.Items.Add(autoStartItem);
             
+            settingsMenu.Items.Add(new ToolStripSeparator());
+            
+            // Меню выбора темы
+            ToolStripMenuItem themeMenuItem = new ToolStripMenuItem("🎨 Тема");
+            
+            ToolStripMenuItem lightThemeItem = new ToolStripMenuItem("☀️ Светлая")
+            {
+                Checked = _themeService.CurrentTheme == ThemeService.ThemeMode.Light,
+                CheckOnClick = false
+            };
+            lightThemeItem.Click += (s, ev) => ChangeTheme(ThemeService.ThemeMode.Light);
+            themeMenuItem.DropDownItems.Add(lightThemeItem);
+            
+            ToolStripMenuItem darkThemeItem = new ToolStripMenuItem("🌙 Темная")
+            {
+                Checked = _themeService.CurrentTheme == ThemeService.ThemeMode.Dark,
+                CheckOnClick = false
+            };
+            darkThemeItem.Click += (s, ev) => ChangeTheme(ThemeService.ThemeMode.Dark);
+            themeMenuItem.DropDownItems.Add(darkThemeItem);
+            
+            ToolStripMenuItem systemThemeItem = new ToolStripMenuItem("💻 Системная")
+            {
+                Checked = _themeService.CurrentTheme == ThemeService.ThemeMode.System,
+                CheckOnClick = false
+            };
+            systemThemeItem.Click += (s, ev) => ChangeTheme(ThemeService.ThemeMode.System);
+            themeMenuItem.DropDownItems.Add(systemThemeItem);
+            
+            settingsMenu.Items.Add(themeMenuItem);
+            
             // Показываем меню около кнопки
             if (sender is Button btn)
             {
                 settingsMenu.Show(btn, new Point(0, btn.Height));
             }
+        }
+
+        private void ChangeTheme(ThemeService.ThemeMode newTheme)
+        {
+            _themeService.CurrentTheme = newTheme;
+            _settingsService.Settings.Theme = newTheme switch
+            {
+                ThemeService.ThemeMode.Dark => "Dark",
+                ThemeService.ThemeMode.System => "System",
+                _ => "Light"
+            };
+            SaveSettings();
+        }
+
+        private void OnThemeChanged(object? sender, ThemeService.ThemeMode newTheme)
+        {
+            _themeService.ApplyTheme(this);
         }
     }
 }

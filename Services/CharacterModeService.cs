@@ -1,6 +1,6 @@
-using DesktopKonata.Utility;
+using DesktopDance.Utility;
 
-namespace DesktopKonata.Services
+namespace DesktopDance.Services
 {
     /// <summary>
     /// Сервис для управления режимами персонажей (одиночный/множественный)

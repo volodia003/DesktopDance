@@ -1,7 +1,7 @@
-using DesktopKonata.Utility;
+using DesktopDance.Utility;
 using System.Windows.Forms;
 
-namespace DesktopKonata.Services
+namespace DesktopDance.Services
 {
     /// <summary>
     /// Сервис для управления операциями с персонажами (переименование, удаление, настройки)
@@ -53,7 +53,7 @@ namespace DesktopKonata.Services
         {
             errorMessage = string.Empty;
 
-            if (characterIndex < 2) // Первые 2 - встроенные персонажи
+            if (characterIndex < CharacterResourceProvider.BUILT_IN_CHARACTERS_COUNT)
             {
                 errorMessage = "Невозможно удалить встроенного персонажа.";
                 return false;
@@ -76,7 +76,7 @@ namespace DesktopKonata.Services
                 }
 
                 // Удаляем из списка пользовательских GIF
-                int customIndex = characterIndex - 2;
+                int customIndex = characterIndex - CharacterResourceProvider.BUILT_IN_CHARACTERS_COUNT;
                 if (customIndex >= 0 && customIndex < _settings.CustomGifFiles.Count)
                 {
                     _settings.CustomGifFiles.RemoveAt(customIndex);

@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace DesktopKonata.Utility
+namespace DesktopDance.Utility
 {
     // Класс для хранения данных о персонаже на экране
     public class CharacterData
@@ -32,6 +32,7 @@ namespace DesktopKonata.Utility
         public bool SingleCharacterMode { get; set; } = false; // По умолчанию режим нескольких персонажей (true = одиночный, false = много)
         public bool ShowInTaskbar { get; set; } = true; // Показывать в панели задач
         public bool ShowMenuOnStartup { get; set; } = true; // Открывать меню при запуске
+        public string Theme { get; set; } = "Light"; // Тема: Light, Dark, System
         
         // Список сохранённых персонажей на экране
         public List<CharacterData> SavedCharacters { get; set; } = new List<CharacterData>();

@@ -1,6 +1,6 @@
-using DesktopKonata.Utility;
+using DesktopDance.Utility;
 
-namespace DesktopKonata.Forms
+namespace DesktopDance.Forms
 {
     public partial class CharacterWindow : Form
     {

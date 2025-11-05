@@ -1,4 +1,4 @@
-namespace DesktopKonata.Services
+namespace DesktopDance.Services
 {
     /// <summary>
     /// Интерфейс стратегии для работы с режимами персонажей (одиночный/множественный)

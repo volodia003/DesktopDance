@@ -1,6 +1,6 @@
 using System.Windows.Forms;
 
-namespace DesktopKonata.Services
+namespace DesktopDance.Services
 {
     /// <summary>
     /// Сервис для управления иконкой в системном трее и её контекстным меню
@@ -200,9 +200,9 @@ namespace DesktopKonata.Services
                 return;
 
             // Удаляем все пункты после встроенных персонажей
-            while (_charactersMenuItem.DropDownItems.Count > 2)
+            while (_charactersMenuItem.DropDownItems.Count > Utility.CharacterResourceProvider.BUILT_IN_CHARACTERS_COUNT)
             {
-                _charactersMenuItem.DropDownItems.RemoveAt(2);
+                _charactersMenuItem.DropDownItems.RemoveAt(Utility.CharacterResourceProvider.BUILT_IN_CHARACTERS_COUNT);
             }
 
             // Если есть пользовательские персонажи, добавляем разделитель

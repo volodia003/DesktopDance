@@ -1,8 +1,8 @@
-using DesktopKonata.Utility;
+using DesktopDance.Utility;
 using Microsoft.Win32;
 using System.Windows.Forms;
 
-namespace DesktopKonata.Services
+namespace DesktopDance.Services
 {
     /// <summary>
     /// Сервис для управления настройками приложения и автозапуском
@@ -139,22 +139,8 @@ namespace DesktopKonata.Services
         {
             if (_settings.AvailableCharacters.Count == 0)
             {
-                _settings.AvailableCharacters.Add(new AvailableCharacterData
-                {
-                    OriginalName = "blin4iik Dance",
-                    DisplayName = "blin4iik Dance",
-                    FilePath = "",
-                    DefaultScale = 1.0f,
-                    DefaultIsFlipped = false
-                });
-                _settings.AvailableCharacters.Add(new AvailableCharacterData
-                {
-                    OriginalName = "Konata Love",
-                    DisplayName = "Konata Love",
-                    FilePath = "",
-                    DefaultScale = 1.0f,
-                    DefaultIsFlipped = false
-                });
+                var builtInCharacters = CharacterResourceProvider.GetBuiltInCharacters();
+                _settings.AvailableCharacters.AddRange(builtInCharacters);
                 _settings.Save();
             }
         }
